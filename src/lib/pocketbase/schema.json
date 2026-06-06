@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-06T10:42:23.809Z",
+  "generatedAt": "2026-06-06T10:50:29.914Z",
   "collections": [
     {
       "name": "users",
@@ -1089,6 +1089,88 @@
         }
       ],
       "indexes": ["CREATE INDEX idx_shopping_items_family ON shopping_items (family_id)"]
+    },
+    {
+      "name": "calendar_events",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["school", "family", "task", "holiday"]
+        },
+        {
+          "name": "date",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "time",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "attendees",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "recurrence",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["none", "daily", "weekly", "monthly"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_calendar_events_family_date ON calendar_events (family_id, date)"
+      ]
     }
   ]
 }
