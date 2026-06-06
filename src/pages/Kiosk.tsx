@@ -105,109 +105,88 @@ export default function Kiosk() {
         onSuccess={() => navigate('/kiosk/profile')}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-slide-up">
-        <Card
-          onClick={() => navigate('/kiosk/meals')}
-          className="cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md rounded-[2rem]"
-        >
-          <CardContent className="p-8 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-5 bg-orange-100 dark:bg-orange-900/30 rounded-full text-orange-500">
-              <Calendar className="h-10 w-10" />
-            </div>
-            <h3 className="text-3xl font-bold text-foreground">Macarronada</h3>
-            <p className="text-xl text-muted-foreground">Refeição do dia</p>
-          </CardContent>
-        </Card>
+      <Card className="bg-card rounded-xl shadow-sm p-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div
+            className="flex flex-col items-center justify-center gap-4 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate('/kiosk/meals')}
+          >
+            <h3 className="text-3xl font-bold text-primary">Refeição</h3>
+            <p className="text-2xl font-semibold text-foreground">Macarronada</p>
+          </div>
 
-        <Card
-          onClick={() => navigate('/kiosk/tasks')}
-          className="cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md rounded-[2rem]"
-        >
-          <CardContent className="p-8 flex flex-col items-center justify-center text-center space-y-4 h-full">
-            <div className="p-5 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-500">
-              <CheckSquare className="h-10 w-10" />
-            </div>
-            <div className="flex space-x-6 w-full justify-center">
-              <div className="text-center">
-                <p className="text-3xl font-bold">12</p>
-                <p className="text-base font-medium text-muted-foreground">Tarefas</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-green-500">10</p>
-                <p className="text-base font-medium text-muted-foreground">Em dia</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-red-500">2</p>
-                <p className="text-base font-medium text-muted-foreground">Atrasadas</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          <div
+            className="flex flex-col items-center justify-center gap-4 cursor-pointer hover:opacity-80 transition-opacity border-y md:border-y-0 md:border-x border-border py-4 md:py-0"
+            onClick={() => navigate('/kiosk/tasks')}
+          >
+            <h3 className="text-3xl font-bold text-primary">Tarefas</h3>
+            <p className="text-2xl font-semibold text-foreground">12 Total (2 Atrasadas)</p>
+          </div>
 
-        <Card className="cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md rounded-[2rem]">
-          <CardContent className="p-8 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-5 bg-yellow-100 dark:bg-yellow-900/30 rounded-full text-yellow-500">
-              <Star className="h-10 w-10" />
-            </div>
-            <h3 className="text-4xl font-black text-yellow-500">450</h3>
-            <p className="text-xl text-muted-foreground">Estrelas na semana</p>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="flex flex-col items-center justify-center gap-4">
+            <h3 className="text-3xl font-bold text-primary">Estrelas</h3>
+            <p className="text-2xl font-semibold text-foreground">450</p>
+          </div>
+        </div>
+      </Card>
 
-      <div
-        className="flex-1 bg-card rounded-[2.5rem] p-8 shadow-elevation flex flex-col animate-slide-up"
-        style={{ animationDelay: '100ms' }}
-      >
+      <div className="mb-8">
         <div className="flex items-center space-x-3 mb-6">
           <Megaphone className="h-8 w-8 text-primary" />
           <h2 className="text-3xl font-bold text-foreground">Mural da Família</h2>
         </div>
 
-        {notices.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center text-muted-foreground text-2xl">
-            Nenhum aviso no momento.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pr-2">
-            {notices.map((notice) => (
-              <div
-                key={notice.id}
-                className="p-6 rounded-3xl bg-secondary/50 border border-border flex flex-col justify-between"
-              >
-                <p className="text-2xl font-medium leading-relaxed mb-4 text-foreground">
-                  {notice.content}
-                </p>
-                <div className="flex justify-between items-center text-base text-muted-foreground">
-                  <span className="font-semibold text-primary/80">{notice.author_name}</span>
+        <div className="max-h-[200px] overflow-y-auto pr-2 space-y-4">
+          {notices.length === 0 ? (
+            <div className="text-muted-foreground text-lg text-center py-4">
+              Nenhum aviso no momento.
+            </div>
+          ) : (
+            notices.map((notice) => (
+              <div key={notice.id} className="bg-secondary rounded-lg p-6">
+                <p className="text-lg text-foreground mb-4">{notice.content}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">{notice.author_name}</span>
+                  {notice.expiry_date && (
+                    <span className="text-xs text-muted-foreground italic">
+                      Expira em: {new Date(notice.expiry_date).toLocaleDateString('pt-BR')}
+                    </span>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
 
-      <div
-        className="bg-card rounded-[2.5rem] p-8 shadow-elevation animate-slide-up"
-        style={{ animationDelay: '200ms' }}
-      >
-        <div
-          className="flex overflow-x-auto gap-10 pb-4 justify-center md:justify-start"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
+      <div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {children.map((child) => {
             const code = child.name.charCodeAt(0) || 0
-            const statusColor =
-              code % 3 === 0 ? 'bg-green-500' : code % 3 === 1 ? 'bg-yellow-500' : 'bg-red-500'
+            const status = code % 3 === 0 ? 'green' : code % 3 === 1 ? 'yellow' : 'red'
+            const borderColor =
+              status === 'green'
+                ? 'border-green-500'
+                : status === 'yellow'
+                  ? 'border-yellow-500'
+                  : 'border-red-500'
+            const indicatorColor =
+              status === 'green'
+                ? 'bg-green-500'
+                : status === 'yellow'
+                  ? 'bg-yellow-500'
+                  : 'bg-red-500'
 
             return (
               <div
                 key={child.id}
-                className="flex flex-col items-center flex-shrink-0 cursor-pointer group"
+                className="flex flex-col items-center cursor-pointer active:scale-95 transition-transform duration-200"
                 onClick={() => handleChildClick(child)}
               >
-                <div className="relative">
-                  <Avatar className="h-[140px] w-[140px] border-[6px] border-background shadow-xl transition-transform duration-300 group-hover:scale-105">
+                <div className="relative min-w-[44px] min-h-[44px] flex items-center justify-center">
+                  <Avatar
+                    className={`h-[140px] w-[140px] border-4 ${borderColor} object-cover rounded-full`}
+                  >
                     <AvatarImage
                       src={
                         child.photo_url ||
@@ -219,18 +198,18 @@ export default function Kiosk() {
                     </AvatarFallback>
                   </Avatar>
                   <div
-                    className={`absolute bottom-2 right-2 h-8 w-8 rounded-full border-4 border-background shadow-sm ${statusColor}`}
+                    className={`absolute bottom-2 right-2 h-3 w-3 rounded-full border-2 border-background ${indicatorColor}`}
                   />
                 </div>
-                <span className="mt-4 text-2xl font-bold text-foreground tracking-tight">
+                <span className="mt-4 text-xl font-semibold text-foreground text-center">
                   {child.name.split(' ')[0]}
                 </span>
               </div>
             )
           })}
           {children.length === 0 && (
-            <div className="w-full text-center text-muted-foreground text-xl py-6 font-medium">
-              Nenhuma criança cadastrada na família.
+            <div className="col-span-full text-muted-foreground text-lg py-4">
+              Nenhuma criança cadastrada.
             </div>
           )}
         </div>

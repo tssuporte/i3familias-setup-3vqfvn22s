@@ -115,4 +115,21 @@
   .animate-fade-in {
     animation: fade-in 0.3s ease-in-out;
   }
+
+  @keyframes balloon-float {
+    0% {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+  }
+  .animate-balloon {
+    animation: balloon-float 3s ease-in-out infinite;
+  }
 }
