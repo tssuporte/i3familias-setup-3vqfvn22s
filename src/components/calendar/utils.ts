@@ -1,4 +1,4 @@
-import { BookOpen, Users, CheckSquare, CalendarStar } from 'lucide-react'
+import { BookOpen, Users, CheckSquare, CalendarDays } from 'lucide-react'
 
 export const typeColors: Record<string, string> = {
   school: 'bg-blue-100 text-blue-900',
@@ -11,7 +11,7 @@ export const typeIcons: Record<string, any> = {
   school: BookOpen,
   family: Users,
   task: CheckSquare,
-  holiday: CalendarStar,
+  holiday: CalendarDays,
 }
 
 export const solidColors: Record<string, string> = {
