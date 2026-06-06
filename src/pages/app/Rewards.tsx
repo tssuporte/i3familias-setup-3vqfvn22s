@@ -3,7 +3,7 @@ import { useFamily } from '@/contexts/FamilyContext'
 import { getRewards, getOrCreateStarsLevel, requestReward } from '@/services/starsService'
 import { StarsProgress } from '@/components/stars/StarsProgress'
 import { StarsHistory } from '@/components/stars/StarsHistory'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -78,6 +78,7 @@ export default function Rewards() {
       toast({
         title: 'Sucesso',
         description: 'Recompensa solicitada com sucesso! Aguarde a aprovação.',
+        className: 'animate-in fade-in duration-300',
       })
     } catch (err: any) {
       toast({ title: 'Erro', description: err.message, variant: 'destructive' })
@@ -89,14 +90,14 @@ export default function Rewards() {
   if (!family) return null
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-10">
+    <div className="space-y-6 max-w-6xl mx-auto p-4 sm:p-8 pb-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <Gift className="h-8 w-8 text-primary" />
             Loja de Recompensas
           </h1>
-          <p className="text-muted-foreground">Troque suas estrelas por prêmios incríveis!</p>
+          <p className="text-muted-foreground mt-1">Troque suas estrelas por prêmios incríveis!</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Link to="/app/rewards/pending">
@@ -146,9 +147,9 @@ export default function Rewards() {
             <h2 className="text-2xl font-bold mb-6">Prêmios Disponíveis</h2>
 
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-64 rounded-xl bg-muted animate-pulse"></div>
+                  <div key={i} className="h-64 rounded-lg bg-muted animate-pulse"></div>
                 ))}
               </div>
             ) : rewards.length === 0 ? (
@@ -160,98 +161,85 @@ export default function Rewards() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {rewards.map((reward) => (
                   <Card
                     key={reward.id}
-                    className="overflow-hidden flex flex-col hover:shadow-md transition-shadow group"
+                    className="bg-card p-6 rounded-lg shadow-md hover:bg-secondary cursor-pointer active:scale-[0.98] transition-transform duration-200 flex flex-col"
                   >
-                    <div className="h-48 bg-muted relative overflow-hidden">
-                      {reward.image_url ? (
-                        <img
-                          src={reward.image_url}
-                          alt={reward.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/20">
-                          <Gift className="h-16 w-16 text-indigo-200 dark:text-indigo-800" />
-                        </div>
-                      )}
-                      <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-full font-bold text-yellow-600 flex items-center gap-1 shadow-sm">
-                        <Star className="h-4 w-4 fill-current" />
-                        {reward.cost}
+                    {reward.image_url ? (
+                      <img
+                        src={reward.image_url}
+                        alt={reward.name}
+                        className="w-full h-[200px] object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="w-full h-[200px] flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/20 rounded-md">
+                        <Gift className="h-16 w-16 text-indigo-200 dark:text-indigo-800" />
                       </div>
-                    </div>
-                    <CardHeader className="pb-2">
+                    )}
+
+                    <div className="flex-1 mt-4">
                       {reward.category && (
                         <span className="text-xs font-semibold text-primary uppercase tracking-wider mb-1 block">
                           {reward.category}
                         </span>
                       )}
-                      <CardTitle className="text-xl">{reward.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-1">
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {reward.description}
+                      <h3 className="text-lg font-semibold">{reward.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-current text-primary" />
+                        {reward.cost} estrelas
                       </p>
-                    </CardContent>
-                    <CardFooter>
-                      <Dialog>
-                        <DialogTrigger asChild>
+                    </div>
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          className="w-full mt-4 bg-primary text-primary-foreground hover:bg-primary/90"
+                          variant={levelData.stars_balance >= reward.cost ? 'default' : 'secondary'}
+                        >
+                          Ver Detalhes
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md p-8 bg-card animate-in fade-in slide-in-from-bottom-4 duration-300 rounded-lg">
+                        <DialogHeader>
+                          <DialogTitle className="text-2xl font-bold">{reward.name}</DialogTitle>
+                          <DialogDescription className="text-lg text-primary font-medium flex items-center gap-1 mt-1">
+                            <Star className="h-5 w-5 fill-current" />
+                            {reward.cost} estrelas
+                          </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="py-2">
+                          {reward.image_url && (
+                            <img
+                              src={reward.image_url}
+                              alt={reward.name}
+                              className="w-full h-[300px] object-cover rounded-lg"
+                            />
+                          )}
+                          <p className="text-base text-foreground mt-4">
+                            {reward.description || 'Sem descrição.'}
+                          </p>
+
+                          {levelData.stars_balance < reward.cost && (
+                            <p className="text-sm text-destructive font-medium mt-4">
+                              Faltam {reward.cost - levelData.stars_balance} estrelas para resgatar.
+                            </p>
+                          )}
+                        </div>
+
+                        <DialogFooter>
                           <Button
-                            className="w-full"
-                            variant={
-                              levelData.stars_balance >= reward.cost ? 'default' : 'secondary'
-                            }
+                            onClick={() => handleRequest(reward.id, reward.cost)}
+                            disabled={levelData.stars_balance < reward.cost || isRequesting}
+                            className="w-full mt-8 bg-primary text-primary-foreground hover:bg-primary/90"
                           >
-                            Ver Detalhes
+                            {isRequesting ? 'Solicitando...' : 'Solicitar Resgate'}
                           </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>{reward.name}</DialogTitle>
-                            <DialogDescription>Detalhes da recompensa</DialogDescription>
-                          </DialogHeader>
-
-                          <div className="py-4 space-y-4">
-                            {reward.image_url && (
-                              <img
-                                src={reward.image_url}
-                                alt={reward.name}
-                                className="w-full h-48 object-cover rounded-lg"
-                              />
-                            )}
-                            <p className="text-sm">{reward.description || 'Sem descrição.'}</p>
-
-                            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border">
-                              <span className="font-medium">Custo:</span>
-                              <div className="flex items-center gap-1.5 text-yellow-600 font-bold text-xl">
-                                <Star className="h-5 w-5 fill-current" />
-                                {reward.cost}
-                              </div>
-                            </div>
-
-                            {levelData.stars_balance < reward.cost && (
-                              <p className="text-sm text-destructive text-center font-medium">
-                                Faltam {reward.cost - levelData.stars_balance} estrelas para
-                                resgatar.
-                              </p>
-                            )}
-                          </div>
-
-                          <DialogFooter>
-                            <Button
-                              onClick={() => handleRequest(reward.id, reward.cost)}
-                              disabled={levelData.stars_balance < reward.cost || isRequesting}
-                              className="w-full sm:w-auto"
-                            >
-                              {isRequesting ? 'Solicitando...' : 'Solicitar Resgate'}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </CardFooter>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </Card>
                 ))}
               </div>
@@ -261,12 +249,14 @@ export default function Rewards() {
       )}
 
       <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Histórico de Estrelas</DialogTitle>
-            <DialogDescription>Acompanhe seus ganhos e gastos recentes.</DialogDescription>
-          </DialogHeader>
-          <div className="py-2">
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none">
+          <div className="bg-card rounded-lg overflow-hidden flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="p-8 pb-0">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold">Histórico de Estrelas</DialogTitle>
+                <DialogDescription>Acompanhe seus ganhos e gastos recentes.</DialogDescription>
+              </DialogHeader>
+            </div>
             {selectedChildId && <StarsHistory memberId={selectedChildId} />}
           </div>
         </DialogContent>

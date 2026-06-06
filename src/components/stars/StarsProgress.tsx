@@ -15,29 +15,27 @@ export function StarsProgress({ totalEarned, balance }: { totalEarned: number; b
   const progress = next ? ((current - min) / (next - min)) * 100 : 100
 
   return (
-    <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 border-indigo-100 dark:border-indigo-900/50">
-      <CardContent className="pt-6">
+    <Card className="bg-card">
+      <CardContent className="p-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">
-              Saldo Atual
-            </p>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-yellow-500">
-              <Star className="w-10 h-10 fill-current drop-shadow-sm" />
-              <span className="text-5xl font-black">{balance}</span>
+            <p className="text-lg font-semibold text-foreground mb-1">Saldo Atual</p>
+            <div className="flex items-center justify-center md:justify-start gap-2 text-primary">
+              <Star className="w-8 h-8 fill-current" />
+              <span className="text-3xl font-bold">{balance}</span>
             </div>
           </div>
           <div className="flex-1 w-full max-w-sm text-center md:text-right">
-            <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-indigo-600 text-white font-bold text-lg mb-3 shadow-sm">
+            <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary text-white font-bold mb-3 shadow-sm">
               Nível {level}
             </div>
-            <Progress value={progress} className="h-3 mb-2 bg-indigo-100 dark:bg-indigo-950" />
+            <Progress value={progress} className="h-2 mt-4 bg-secondary" />
             {next ? (
-              <p className="text-xs font-medium text-indigo-600/80 dark:text-indigo-400">
+              <p className="text-xs font-medium text-muted-foreground mt-2">
                 Faltam {next - current} estrelas para o Nível {level + 1}
               </p>
             ) : (
-              <p className="text-xs font-medium text-indigo-600/80 dark:text-indigo-400">
+              <p className="text-xs font-medium text-muted-foreground mt-2">
                 Nível Máximo Atingido!
               </p>
             )}

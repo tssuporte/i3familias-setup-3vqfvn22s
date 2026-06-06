@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getStarsHistory } from '@/services/starsService'
-import { ArrowDownRight, ArrowUpRight, AlertCircle, RefreshCw } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AlertCircle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -64,45 +63,45 @@ export function StarsHistory({ memberId }: { memberId: string }) {
   }
 
   return (
-    <Card className="border-0 shadow-none">
-      <CardHeader className="px-0 pt-0 pb-4">
-        <CardTitle className="text-lg">Histórico de Transações</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 px-0 pb-0">
-        {history.map((tx) => (
-          <div
-            key={tx.id}
-            className="flex items-center justify-between p-3 rounded-lg border bg-card"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`p-2 rounded-full ${tx.transaction_type === 'earned' ? 'bg-green-100 text-green-600' : tx.transaction_type === 'spent' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}
-              >
-                {tx.transaction_type === 'earned' ? (
-                  <ArrowUpRight className="h-4 w-4" />
-                ) : (
-                  <ArrowDownRight className="h-4 w-4" />
-                )}
-              </div>
-              <div>
-                <p className="text-sm font-medium">{tx.reason}</p>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(tx.created), "dd 'de' MMM, HH:mm", { locale: ptBR })}
-                </p>
-              </div>
-            </div>
+    <div className="max-w-4xl mx-auto p-8 w-full">
+      <div className="space-y-4">
+        {history.map((tx) => {
+          let typeStyles = ''
+          let sign = ''
+          if (tx.transaction_type === 'earned') {
+            typeStyles = 'border-l-4 border-l-green-500 text-green-600'
+            sign = '+'
+          } else if (tx.transaction_type === 'spent') {
+            typeStyles = 'border-l-4 border-l-red-500 text-red-600'
+            sign = '-'
+          } else {
+            typeStyles = 'border-l-4 border-l-orange-500 text-orange-600'
+            sign = '-'
+          }
+
+          return (
             <div
-              className={`font-bold ${tx.transaction_type === 'earned' ? 'text-green-600' : tx.transaction_type === 'spent' ? 'text-blue-600' : 'text-red-600'}`}
+              key={tx.id}
+              className={`bg-card p-6 rounded-lg shadow-sm flex items-center justify-between gap-4 ${typeStyles}`}
             >
-              {tx.transaction_type === 'earned' ? '+' : '-'}
-              {tx.amount}
+              <div className="flex flex-col">
+                <span className="text-base text-foreground">{tx.reason}</span>
+                <span className="text-xs text-muted-foreground mt-1">
+                  {format(new Date(tx.created), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                </span>
+              </div>
+              <div className="text-lg font-semibold whitespace-nowrap">
+                {sign}
+                {tx.amount}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
+
         {hasMore && (
           <Button
             variant="ghost"
-            className="w-full"
+            className="w-full mt-4"
             onClick={() => {
               const next = page + 1
               setPage(next)
@@ -113,7 +112,7 @@ export function StarsHistory({ memberId }: { memberId: string }) {
             {loading ? 'Carregando...' : 'Ver Mais'}
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
