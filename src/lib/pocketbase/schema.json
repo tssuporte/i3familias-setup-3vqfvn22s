@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-06T10:12:03.235Z",
+  "generatedAt": "2026-06-06T10:20:50.019Z",
   "collections": [
     {
       "name": "users",
@@ -916,6 +916,94 @@
       "indexes": [
         "CREATE INDEX idx_pantry_family_id ON pantry (family_id)",
         "CREATE INDEX idx_pantry_expiry_date ON pantry (expiry_date)"
+      ]
+    },
+    {
+      "name": "meals",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "date",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "meal_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["breakfast", "lunch", "dinner"]
+        },
+        {
+          "name": "dish",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "ingredients",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "prep_time",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "difficulty",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["easy", "medium", "hard"]
+        },
+        {
+          "name": "family_rating",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "is_cooked",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_meals_family_date ON meals (family_id, date)",
+        "CREATE INDEX idx_meals_type ON meals (meal_type)"
       ]
     }
   ]
