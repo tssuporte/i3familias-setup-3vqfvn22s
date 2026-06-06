@@ -19,6 +19,7 @@ const Signup = lazy(() => import('./pages/auth/Signup'))
 
 // App Pages
 const Onboarding = lazy(() => import('./pages/app/Onboarding'))
+const ChildView = lazy(() => import('./pages/app/ChildView'))
 const Dashboard = lazy(() => import('./pages/app/Dashboard'))
 const Tasks = lazy(() => import('./pages/app/Tasks'))
 const Pantry = lazy(() => import('./pages/app/Pantry'))
@@ -81,6 +82,7 @@ const App = () => (
                     <Route path="/app/notices" element={<Notices />} />
                     <Route path="/app/reports" element={<Reports />} />
                     <Route path="/app/settings" element={<Settings />} />
+                    <Route path="/app/child/:memberId" element={<ChildView />} />
                   </Route>
                 </Route>
 
