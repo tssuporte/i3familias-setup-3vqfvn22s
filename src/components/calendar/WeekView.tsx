@@ -46,7 +46,7 @@ export function WeekView({ currentDate, events, onDayClick, onEventClick }: Week
             <div
               key={i}
               className={cn(
-                'border-r p-2 space-y-2 cursor-pointer hover:bg-muted/10',
+                'border-r p-1.5 sm:p-2 space-y-1.5 cursor-pointer hover:bg-accent transition-colors',
                 i === 6 && 'border-r-0',
               )}
               onClick={() => onDayClick(day)}

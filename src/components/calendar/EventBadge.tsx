@@ -12,12 +12,12 @@ export function EventBadge({ event, onClick }: EventBadgeProps) {
     <div
       onClick={onClick}
       className={cn(
-        'px-1.5 py-0.5 text-[10px] md:text-xs rounded border truncate cursor-pointer hover:opacity-80 transition-opacity',
+        'px-1.5 py-0.5 text-[10px] md:text-xs font-medium rounded truncate cursor-pointer transition-colors hover:opacity-80',
         typeColors[event.type] || 'bg-muted text-muted-foreground',
       )}
       title={event.title}
     >
-      {event.time && <span className="font-semibold mr-1">{event.time}</span>}
+      {event.time && <span className="font-semibold mr-1 opacity-70">{event.time}</span>}
       {event.title}
     </div>
   )

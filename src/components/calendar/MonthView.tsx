@@ -7,6 +7,7 @@ import {
   eachDayOfInterval,
   format,
   isSameMonth,
+  isSameDay,
   isToday,
 } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -15,12 +16,19 @@ import { EventBadge } from './EventBadge'
 
 interface MonthViewProps {
   currentDate: Date
+  selectedDate: Date
   events: CalendarEvent[]
   onDayClick: (date: Date) => void
   onEventClick: (event: CalendarEvent) => void
 }
 
-export function MonthView({ currentDate, events, onDayClick, onEventClick }: MonthViewProps) {
+export function MonthView({
+  currentDate,
+  selectedDate,
+  events,
+  onDayClick,
+  onEventClick,
+}: MonthViewProps) {
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(currentDate))
     const end = endOfWeek(endOfMonth(currentDate))
@@ -31,39 +39,48 @@ export function MonthView({ currentDate, events, onDayClick, onEventClick }: Mon
 
   return (
     <div className="flex flex-col h-full">
-      <div className="grid grid-cols-7 border-b bg-muted/50">
+      <div className="grid grid-cols-7 mb-2">
         {weekDays.map((day) => (
-          <div key={day} className="py-2 text-center text-sm font-medium text-muted-foreground">
+          <div
+            key={day}
+            className="py-1 text-center text-xs md:text-sm font-medium text-muted-foreground uppercase"
+          >
             {day}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 flex-1 auto-rows-fr">
-        {days.map((day, idx) => {
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 flex-1 auto-rows-fr">
+        {days.map((day) => {
           const dayStr = format(day, 'yyyy-MM-dd')
           const dayEvents = events.filter((e) => e.date.startsWith(dayStr))
+          const isSelected = isSameDay(day, selectedDate)
+
           return (
             <div
               key={day.toISOString()}
               onClick={() => onDayClick(day)}
               className={cn(
-                'min-h-[100px] border-r border-b p-1 md:p-2 cursor-pointer hover:bg-muted/30 transition-colors',
-                !isSameMonth(day, currentDate) && 'bg-muted/10 opacity-50 text-muted-foreground',
-                idx % 7 === 6 && 'border-r-0',
+                'h-16 sm:h-24 border rounded-lg p-1 sm:p-2 cursor-pointer hover:bg-accent transition-colors flex flex-col overflow-hidden',
+                !isSameMonth(day, currentDate) && 'opacity-40 bg-muted/30',
+                isSelected && 'ring-2 ring-primary ring-offset-1 ring-offset-background',
               )}
             >
-              <div className="flex justify-between items-start mb-1">
+              <div className="flex justify-start mb-1">
                 <span
                   className={cn(
-                    'text-xs md:text-sm font-medium h-6 w-6 flex items-center justify-center rounded-full',
-                    isToday(day) && 'bg-primary text-primary-foreground',
+                    'text-[10px] sm:text-xs font-medium h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full',
+                    isSelected
+                      ? 'bg-primary text-primary-foreground'
+                      : isToday(day)
+                        ? 'bg-secondary text-secondary-foreground'
+                        : '',
                   )}
                 >
                   {format(day, 'd')}
                 </span>
               </div>
-              <div className="space-y-1 overflow-y-auto max-h-[80px] scrollbar-none">
-                {dayEvents.slice(0, 3).map((event) => (
+              <div className="space-y-1 overflow-y-auto flex-1 scrollbar-none hidden sm:block">
+                {dayEvents.map((event) => (
                   <EventBadge
                     key={event.id}
                     event={event}
@@ -73,11 +90,23 @@ export function MonthView({ currentDate, events, onDayClick, onEventClick }: Mon
                     }}
                   />
                 ))}
-                {dayEvents.length > 3 && (
-                  <div className="text-[10px] text-muted-foreground text-center font-medium">
-                    +{dayEvents.length - 3}
-                  </div>
-                )}
+              </div>
+              <div className="sm:hidden flex flex-wrap gap-0.5 mt-auto pb-1">
+                {dayEvents.slice(0, 4).map((event) => (
+                  <div
+                    key={event.id}
+                    className={cn(
+                      'w-1.5 h-1.5 rounded-full',
+                      event.type === 'school'
+                        ? 'bg-blue-500'
+                        : event.type === 'family'
+                          ? 'bg-green-500'
+                          : event.type === 'task'
+                            ? 'bg-orange-500'
+                            : 'bg-red-500',
+                    )}
+                  />
+                ))}
               </div>
             </div>
           )

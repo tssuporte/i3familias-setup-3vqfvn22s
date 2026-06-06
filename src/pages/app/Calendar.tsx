@@ -39,7 +39,7 @@ export default function Calendar() {
     else setCurrentDate(addDays(currentDate, 1))
   }
 
-  const handleAdd = (date = new Date()) => {
+  const handleAdd = (date = selectedDate) => {
     setEditingEvent(null)
     setSelectedDate(date)
     setIsDialogOpen(true)
@@ -48,6 +48,10 @@ export default function Calendar() {
   const handleEdit = (event: any) => {
     setEditingEvent(event)
     setIsDialogOpen(true)
+  }
+
+  const handleDayClick = (date: Date) => {
+    setSelectedDate(date)
   }
 
   return (
@@ -62,48 +66,59 @@ export default function Calendar() {
               <TabsTrigger value="day">Dia</TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button size="icon" onClick={() => handleAdd(new Date())}>
+          <Button size="icon" onClick={() => handleAdd()} className="hidden md:flex">
             <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
       <div className="flex items-center justify-between bg-card rounded-lg border p-2">
-        <Button variant="ghost" size="icon" onClick={handlePrevious}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePrevious}
+          className="hover:scale-110 transition-transform cursor-pointer"
+        >
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-semibold capitalize">
+        <h2 className="text-lg font-bold capitalize">
           {format(currentDate, view === 'day' ? "dd 'de' MMMM, yyyy" : 'MMMM yyyy', {
             locale: ptBR,
           })}
         </h2>
-        <Button variant="ghost" size="icon" onClick={handleNext}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleNext}
+          className="hover:scale-110 transition-transform cursor-pointer"
+        >
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 flex-1">
-        <div className="md:col-span-3 rounded-lg border bg-card shadow-sm overflow-hidden flex flex-col">
+      <div className="flex flex-col md:flex-row gap-6 flex-1">
+        <div className="w-full md:w-3/4 rounded-lg bg-card overflow-hidden flex flex-col">
           {loading ? (
-            <div className="flex-1 p-6 flex flex-col space-y-4">
+            <div className="flex-1 p-6 flex flex-col space-y-4 border rounded-lg">
               <div className="grid grid-cols-7 gap-2">
                 {Array.from({ length: 35 }).map((_, i) => (
-                  <div key={i} className="h-20 bg-muted/40 animate-pulse rounded-md" />
+                  <div key={i} className="h-20 bg-muted/40 animate-pulse rounded-lg" />
                 ))}
               </div>
             </div>
           ) : view === 'month' ? (
             <MonthView
               currentDate={currentDate}
+              selectedDate={selectedDate}
               events={events}
-              onDayClick={handleAdd}
+              onDayClick={handleDayClick}
               onEventClick={handleEdit}
             />
           ) : view === 'week' ? (
             <WeekView
               currentDate={currentDate}
               events={events}
-              onDayClick={handleAdd}
+              onDayClick={handleDayClick}
               onEventClick={handleEdit}
             />
           ) : (
@@ -116,7 +131,7 @@ export default function Calendar() {
           )}
         </div>
 
-        <div className="md:col-span-1">
+        <div className="w-full md:w-1/4">
           {loading ? (
             <div className="rounded-lg border bg-card shadow-sm h-full flex flex-col p-4 space-y-4">
               <div className="h-10 bg-muted/40 animate-pulse rounded-md w-2/3" />
@@ -146,6 +161,13 @@ export default function Calendar() {
           familyId={familyId}
         />
       )}
+
+      <Button
+        className="md:hidden fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg z-50"
+        onClick={() => handleAdd()}
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
     </div>
   )
 }

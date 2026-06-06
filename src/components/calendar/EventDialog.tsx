@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,14 +20,8 @@ import {
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
-import {
-  createCalendarEvent,
-  updateCalendarEvent,
-  deleteCalendarEvent,
-  CalendarEvent,
-} from '@/services/calendar'
+import { createCalendarEvent, updateCalendarEvent, CalendarEvent } from '@/services/calendar'
 import { getFamilyMembers, FamilyMember } from '@/services/family-members'
-import { Trash2 } from 'lucide-react'
 
 interface EventDialogProps {
   isOpen: boolean
@@ -95,29 +88,14 @@ export function EventDialog({ isOpen, setIsOpen, event, defaultDate, familyId }:
       }
       if (event) {
         await updateCalendarEvent(event.id, data)
-        toast({ title: 'Sucesso', description: 'Evento atualizado com sucesso.' })
+        toast({ title: 'Sucesso', description: 'Evento atualizado.' })
       } else {
         await createCalendarEvent(data)
-        toast({ title: 'Sucesso', description: 'Evento criado com sucesso.' })
+        toast({ title: 'Sucesso', description: 'Evento criado.' })
       }
       setIsOpen(false)
     } catch (err) {
       toast({ title: 'Erro', description: 'Falha ao salvar evento.', variant: 'destructive' })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!event) return
-    if (!confirm('Deseja realmente excluir este evento?')) return
-    setLoading(true)
-    try {
-      await deleteCalendarEvent(event.id)
-      toast({ title: 'Sucesso', description: 'Evento excluído.' })
-      setIsOpen(false)
-    } catch (err) {
-      toast({ title: 'Erro', description: 'Falha ao excluir evento.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -129,44 +107,44 @@ export function EventDialog({ isOpen, setIsOpen, event, defaultDate, familyId }:
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md !rounded-t-2xl sm:!rounded-lg shadow-lg !bottom-0 !top-auto !translate-y-0 sm:!top-[50%] sm:!translate-y-[-50%] p-6 m-0 gap-6 w-full fixed max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{event ? 'Editar Evento' : 'Novo Evento'}</DialogTitle>
-          <DialogDescription>
-            {event
-              ? 'Altere os detalhes do evento abaixo.'
-              : 'Preencha os detalhes para criar um novo evento.'}
-          </DialogDescription>
+          <DialogTitle className="text-xl font-bold">
+            {event ? 'Editar Evento' : 'Novo Evento'}
+          </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="title">Título *</Label>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="title" className="font-bold">
+              Título *
+            </Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Reunião Escolar"
+              className="w-full"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>Tipo *</Label>
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <div className="flex flex-col gap-2 flex-1">
+              <Label className="font-bold">Tipo *</Label>
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="family">Família</SelectItem>
                   <SelectItem value="school">Escola</SelectItem>
+                  <SelectItem value="family">Família</SelectItem>
                   <SelectItem value="task">Tarefa</SelectItem>
                   <SelectItem value="holiday">Feriado</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid gap-2">
-              <Label>Recorrência</Label>
+            <div className="flex flex-col gap-2 flex-1">
+              <Label className="font-bold">Recorrência</Label>
               <Select value={recurrence} onValueChange={setRecurrence}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -178,19 +156,35 @@ export function EventDialog({ isOpen, setIsOpen, event, defaultDate, familyId }:
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="date">Data *</Label>
-              <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <div className="flex flex-col gap-2 flex-1">
+              <Label htmlFor="date" className="font-bold">
+                Data *
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full"
+              />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="time">Horário</Label>
-              <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            <div className="flex flex-col gap-2 flex-1">
+              <Label htmlFor="time" className="font-bold">
+                Horário
+              </Label>
+              <Input
+                id="time"
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-full"
+              />
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label>Participantes</Label>
-            <div className="border rounded-md p-3 grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+          <div className="flex flex-col gap-2">
+            <Label className="font-bold">Participantes</Label>
+            <div className="border rounded-lg p-3 grid grid-cols-2 gap-3 max-h-32 overflow-y-auto bg-muted/10">
               {members.map((m) => (
                 <div key={m.id} className="flex items-center space-x-2">
                   <Checkbox
@@ -200,51 +194,37 @@ export function EventDialog({ isOpen, setIsOpen, event, defaultDate, familyId }:
                   />
                   <label
                     htmlFor={`member-${m.id}`}
-                    className="text-sm font-medium leading-none cursor-pointer"
+                    className="text-sm font-medium leading-none cursor-pointer select-none"
                   >
                     {m.name}
                   </label>
                 </div>
               ))}
               {members.length === 0 && (
-                <span className="text-sm text-muted-foreground">Nenhum membro encontrado.</span>
+                <span className="text-sm text-muted-foreground col-span-2 text-center py-2">
+                  Nenhum membro encontrado.
+                </span>
               )}
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="desc">Descrição</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="desc" className="font-bold">
+              Descrição
+            </Label>
             <Textarea
               id="desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Detalhes adicionais..."
-              className="resize-none"
+              className="resize-none w-full"
               rows={3}
             />
           </div>
         </div>
-        <DialogFooter className="flex justify-between sm:justify-between items-center w-full">
-          {event ? (
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              onClick={handleDelete}
-              disabled={loading}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          ) : (
-            <div></div>
-          )}
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={!isValid || loading}>
-              Salvar
-            </Button>
-          </div>
+        <DialogFooter className="mt-2 w-full sm:justify-start">
+          <Button onClick={handleSave} disabled={!isValid || loading} className="w-full">
+            Salvar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
