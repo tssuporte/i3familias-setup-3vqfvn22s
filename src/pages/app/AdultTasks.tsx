@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/select'
 import { CreateAdultTaskDialog } from '@/components/tasks/CreateAdultTaskDialog'
 
+import { cn } from '@/lib/utils'
+
 export default function AdultTasks() {
   const { family } = useFamily() as any
   const { toast } = useToast()
@@ -81,7 +83,7 @@ export default function AdultTasks() {
     filterMember === 'all' ? tasks : tasks.filter((t) => t.assigned_to === filterMember)
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-10">
+    <div className="max-w-4xl mx-auto p-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Tarefas de Adultos</h1>
         <div className="flex flex-wrap gap-2">
@@ -123,21 +125,45 @@ export default function AdultTasks() {
           Nenhuma tarefa de adulto encontrada.
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredTasks.map((task) => {
             const isOverdue = new Date(task.due_date) < new Date() && task.status !== 'completed'
             return (
-              <Card key={task.id} className={isOverdue ? 'border-red-300 bg-red-50/20' : ''}>
-                <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <Card
+                key={task.id}
+                className={cn(
+                  'cursor-pointer transition-transform duration-200 active:scale-[0.98] border-0 border-l-4 border-l-primary rounded-lg overflow-hidden shadow-sm',
+                  isOverdue
+                    ? 'bg-destructive/10 hover:bg-destructive/20'
+                    : 'bg-card hover:bg-secondary',
+                )}
+              >
+                <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-lg">{task.name}</span>
+                      <span className="font-semibold text-lg">{task.name}</span>
                       {task.priority === 'high' && (
-                        <Badge variant="destructive">Alta Prioridade</Badge>
+                        <Badge
+                          variant="secondary"
+                          className="bg-red-100 text-red-800 hover:bg-red-100 border-none"
+                        >
+                          Alta
+                        </Badge>
                       )}
                       {task.priority === 'medium' && (
-                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                        <Badge
+                          variant="secondary"
+                          className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-none"
+                        >
                           Média
+                        </Badge>
+                      )}
+                      {task.priority === 'low' && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-none"
+                        >
+                          Baixa
                         </Badge>
                       )}
                     </div>
@@ -158,13 +184,17 @@ export default function AdultTasks() {
                   <div>
                     {task.status === 'completed' ? (
                       <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200 text-sm py-1.5 px-3"
+                        variant="secondary"
+                        className="bg-green-100 text-green-800 hover:bg-green-100 border-none px-3 py-1"
                       >
                         Concluída
                       </Badge>
                     ) : (
-                      <Button onClick={() => handleComplete(task.id)} disabled={isActionLoading}>
+                      <Button
+                        onClick={() => handleComplete(task.id)}
+                        disabled={isActionLoading}
+                        className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                      >
                         Marcar Concluída
                       </Button>
                     )}

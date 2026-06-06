@@ -16,6 +16,8 @@ import { CreateChildTaskDialog } from '@/components/tasks/CreateChildTaskDialog'
 import { WeekLeaderPanel } from '@/components/tasks/WeekLeaderPanel'
 import { Loader2, ArrowRight } from 'lucide-react'
 
+import { cn } from '@/lib/utils'
+
 export default function Tasks() {
   const { family } = useFamily() as any
   const { toast } = useToast()
@@ -86,7 +88,7 @@ export default function Tasks() {
   const isSelectedChildLeader = weekLeader?.leader_id === selectedChild
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-10">
+    <div className="max-w-4xl mx-auto p-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Tarefas das Crianças</h1>
         <div className="flex flex-wrap gap-2">
@@ -124,7 +126,11 @@ export default function Tasks() {
           </Tabs>
 
           {isSelectedChildLeader && (
-            <WeekLeaderPanel leaderId={selectedChild} weekLeaderRecordId={weekLeader?.id} />
+            <WeekLeaderPanel
+              leaderId={selectedChild}
+              weekLeaderRecordId={weekLeader?.id}
+              leader={children.find((c) => c.id === selectedChild)}
+            />
           )}
 
           {filteredTasks.length === 0 ? (
@@ -132,7 +138,7 @@ export default function Tasks() {
               Nenhuma tarefa encontrada para esta criança.
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {filteredTasks.map((task) => (
                 <ChildTaskCard
                   key={task.id}
