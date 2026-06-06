@@ -91,33 +91,50 @@ export function PantryModal({ open, onOpenChange, item, onSave }: PantryModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{item ? 'Editar Item' : 'Adicionar Item'}</DialogTitle>
+      <DialogContent className="sm:max-w-[500px] rounded-xl shadow-2xl p-6">
+        <DialogHeader className="mb-2">
+          <DialogTitle className="text-xl font-bold">
+            {item ? 'Editar Item' : 'Adicionar Item'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome</Label>
-            <Input id="name" {...register('name')} placeholder="Ex: Arroz" />
+          <div className="space-y-3">
+            <Label htmlFor="name" className="font-semibold text-sm">
+              Nome do produto
+            </Label>
+            <Input
+              id="name"
+              {...register('name')}
+              placeholder="Ex: Arroz branco"
+              className="w-full"
+            />
             {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantidade</Label>
-              <Input id="quantity" type="number" step="any" {...register('quantity')} />
+            <div className="space-y-3">
+              <Label htmlFor="quantity" className="font-semibold text-sm">
+                Quantidade
+              </Label>
+              <Input
+                id="quantity"
+                type="number"
+                step="any"
+                {...register('quantity')}
+                className="w-full"
+              />
               {errors.quantity && (
                 <p className="text-sm text-destructive">{errors.quantity.message}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label>Unidade</Label>
+            <div className="space-y-3">
+              <Label className="font-semibold text-sm">Unidade</Label>
               <Controller
                 control={control}
                 name="unit"
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
@@ -137,32 +154,54 @@ export function PantryModal({ open, onOpenChange, item, onSave }: PantryModalPro
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Categoria</Label>
-              <Input id="category" {...register('category')} placeholder="Ex: Grãos" />
+            <div className="space-y-3">
+              <Label htmlFor="category" className="font-semibold text-sm">
+                Categoria
+              </Label>
+              <Input
+                id="category"
+                {...register('category')}
+                placeholder="Ex: Grãos"
+                className="w-full"
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="location">Localização</Label>
-              <Input id="location" {...register('location')} placeholder="Ex: Armário 1" />
+            <div className="space-y-3">
+              <Label htmlFor="location" className="font-semibold text-sm">
+                Localização
+              </Label>
+              <Input
+                id="location"
+                {...register('location')}
+                placeholder="Ex: Armário 1"
+                className="w-full"
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="expiry_date">Data de Validade</Label>
-              <Input id="expiry_date" type="date" {...register('expiry_date')} />
+            <div className="space-y-3">
+              <Label htmlFor="expiry_date" className="font-semibold text-sm">
+                Data de Validade
+              </Label>
+              <Input id="expiry_date" type="date" {...register('expiry_date')} className="w-full" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="min_stock">Estoque Mínimo</Label>
-              <Input id="min_stock" type="number" {...register('min_stock')} />
+            <div className="space-y-3">
+              <Label htmlFor="min_stock" className="font-semibold text-sm">
+                Estoque Mínimo
+              </Label>
+              <Input id="min_stock" type="number" {...register('min_stock')} className="w-full" />
             </div>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <DialogFooter className="pt-4 mt-2 border-t">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100 px-6 font-medium shadow-sm transition-colors"
+            >
               {isSubmitting ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>
