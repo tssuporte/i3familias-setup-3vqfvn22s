@@ -1,4 +1,5 @@
 import pb from '@/lib/pocketbase/client'
+import { addStars } from '@/services/starsService'
 
 export const getChildTasks = async (familyId: string) => {
   try {
@@ -22,11 +23,24 @@ export const createChildTask = async (data: any) => {
 
 export const completeChildTask = async (id: string, photoUrl?: string) => {
   try {
+    const task = await pb.collection('tasks_children').getOne(id)
     const data: any = { status: 'completed', completed_at: new Date().toISOString() }
     if (photoUrl) {
       data.photo_url = photoUrl
     }
-    return await pb.collection('tasks_children').update(id, data)
+    const updated = await pb.collection('tasks_children').update(id, data)
+
+    if (task.stars_value && task.stars_value > 0) {
+      await addStars(
+        task.family_id,
+        task.assigned_to,
+        task.stars_value,
+        `Tarefa: ${task.name}`,
+        task.id,
+      ).catch(console.error)
+    }
+
+    return updated
   } catch (err) {
     throw new Error('Erro ao concluir a tarefa.')
   }

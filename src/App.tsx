@@ -32,6 +32,8 @@ const Finances = lazy(() => import('./pages/app/Finances'))
 const Notices = lazy(() => import('./pages/app/Notices'))
 const Reports = lazy(() => import('./pages/app/Reports'))
 const Settings = lazy(() => import('./pages/app/Settings'))
+const Rewards = lazy(() => import('./pages/app/Rewards'))
+const RewardsPending = lazy(() => import('./pages/app/RewardsPending'))
 
 // Kiosk
 const Kiosk = lazy(() => import('./pages/Kiosk'))
@@ -84,6 +86,8 @@ const App = () => (
                     <Route path="/app/notices" element={<Notices />} />
                     <Route path="/app/reports" element={<Reports />} />
                     <Route path="/app/settings" element={<Settings />} />
+                    <Route path="/app/rewards" element={<Rewards />} />
+                    <Route path="/app/rewards/pending" element={<RewardsPending />} />
                     <Route path="/app/child/:memberId" element={<ChildView />} />
                   </Route>
                 </Route>

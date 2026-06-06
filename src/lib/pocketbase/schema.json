@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-06T09:48:03.644Z",
+  "generatedAt": "2026-06-06T09:55:17.312Z",
   "collections": [
     {
       "name": "users",
@@ -552,6 +552,274 @@
           "type": "date",
           "required": false,
           "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "stars_levels",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "stars_total_earned",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "stars_balance",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "current_level",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE UNIQUE INDEX idx_stars_levels_member ON stars_levels (member_id)"]
+    },
+    {
+      "name": "stars_transactions",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "transaction_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["earned", "spent", "penalty"]
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "related_task_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "tasks_children"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "rewards",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "image_url",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "rewards_redemptions",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "reward_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "rewards"
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pending", "approved", "rejected"]
+        },
+        {
+          "name": "requested_at",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "approved_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "approved_by",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "family_members"
         },
         {
           "name": "created",

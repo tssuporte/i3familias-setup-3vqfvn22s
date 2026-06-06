@@ -11,6 +11,7 @@ import {
   Bell,
   BarChart3,
   Settings,
+  Star,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -32,6 +33,7 @@ const items = [
   { title: 'Calendário', url: '/app/calendar', icon: CalendarIcon },
   { title: 'Estudos', url: '/app/studies', icon: BookOpen },
   { title: 'Finanças', url: '/app/finances', icon: DollarSign },
+  { title: 'Recompensas', url: '/app/rewards', icon: Star },
   { title: 'Avisos', url: '/app/notices', icon: Bell },
   { title: 'Relatórios', url: '/app/reports', icon: BarChart3 },
   { title: 'Configurações', url: '/app/settings', icon: Settings },
