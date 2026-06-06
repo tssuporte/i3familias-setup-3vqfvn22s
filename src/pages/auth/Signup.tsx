@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card'
 import { useAuth } from '@/hooks/use-auth'
 import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
 
 export default function Signup() {
   const [name, setName] = useState('')
@@ -36,22 +37,42 @@ export default function Signup() {
       return
     }
 
-    setIsLoading(true)
-    const { error } = await signUp(email, password, name)
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+      toast({
+        title: 'Senha fraca',
+        description:
+          'A senha deve ter no mínimo 8 caracteres, contendo pelo menos uma letra maiúscula e um número.',
+        variant: 'destructive',
+      })
+      return
+    }
 
-    if (error) {
+    setIsLoading(true)
+
+    try {
+      const { error } = await signUp(email, password, name)
+
+      if (error) {
+        toast({
+          title: 'Erro ao criar conta',
+          description: 'Nao foi possivel criar conta. Tente novamente.',
+          variant: 'destructive',
+        })
+        setIsLoading(false)
+      } else {
+        toast({
+          title: 'Conta criada com sucesso!',
+          description: 'Bem-vindo ao Family Hub.',
+        })
+        navigate('/app')
+      }
+    } catch (err) {
       toast({
         title: 'Erro ao criar conta',
-        description: 'Ocorreu um erro. O e-mail pode já estar em uso ou a senha é muito fraca.',
+        description: 'Nao foi possivel criar conta. Tente novamente.',
         variant: 'destructive',
       })
       setIsLoading(false)
-    } else {
-      toast({
-        title: 'Conta criada com sucesso!',
-        description: 'Bem-vindo ao Family Hub.',
-      })
-      navigate('/app')
     }
   }
 
@@ -94,8 +115,10 @@ export default function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={8}
               />
+              <p className="text-xs text-muted-foreground">
+                Mínimo de 8 caracteres, 1 maiúscula e 1 número.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirmar Senha</Label>
@@ -110,6 +133,7 @@ export default function Signup() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? 'Criando...' : 'Criar Conta'}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
