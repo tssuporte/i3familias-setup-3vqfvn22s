@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-06T10:30:36.603Z",
+  "generatedAt": "2026-06-06T10:37:29.771Z",
   "collections": [
     {
       "name": "users",
@@ -93,6 +93,12 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "shopping_budget",
+          "type": "number",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": ["CREATE INDEX idx_families_user_id ON families (user_id)"]
@@ -1005,6 +1011,84 @@
         "CREATE INDEX idx_meals_family_date ON meals (family_id, date)",
         "CREATE INDEX idx_meals_type ON meals (meal_type)"
       ]
+    },
+    {
+      "name": "shopping_items",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "unit",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "estimated_price",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "is_purchased",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "source",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["manual", "auto-generated"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_shopping_items_family ON shopping_items (family_id)"]
     }
   ]
 }
