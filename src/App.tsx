@@ -33,6 +33,9 @@ const Settings = lazy(() => import('./pages/app/Settings'))
 
 // Kiosk
 const Kiosk = lazy(() => import('./pages/Kiosk'))
+const KioskTasks = lazy(() => import('./pages/kiosk/Tasks'))
+const KioskProfile = lazy(() => import('./pages/kiosk/Profile'))
+const KioskMeals = lazy(() => import('./pages/kiosk/Meals'))
 
 const App = () => (
   <ErrorBoundary>
@@ -90,6 +93,9 @@ const App = () => (
                   }
                 >
                   <Route path="/kiosk" element={<Kiosk />} />
+                  <Route path="/kiosk/tasks" element={<KioskTasks />} />
+                  <Route path="/kiosk/profile" element={<KioskProfile />} />
+                  <Route path="/kiosk/meals" element={<KioskMeals />} />
                 </Route>
 
                 {/* 404 */}
