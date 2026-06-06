@@ -1,0 +1,21 @@
+{
+  "name": "Family Hub",
+  "short_name": "Family Hub",
+  "description": "A plataforma inteligente para a gestão da sua casa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#98a428",
+  "icons": [
+    {
+      "src": "https://img.usecurling.com/i?q=home&color=green&shape=fill",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.usecurling.com/i?q=home&color=green&shape=fill",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
