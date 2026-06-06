@@ -9,8 +9,6 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -27,40 +25,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Star, Clock, ChefHat, CheckCircle2, ArrowRightLeft, Edit, Plus } from 'lucide-react'
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
+import {
+  Star,
+  Clock,
+  ChefHat,
+  CheckCircle2,
+  ArrowRightLeft,
+  Edit,
+  Plus,
+  Coffee,
+  Sun,
+  Moon,
+  Loader2,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const mealTypes = ['breakfast', 'lunch', 'dinner'] as const
 type MealType = (typeof mealTypes)[number]
 const mealLabels: Record<MealType, string> = {
-  breakfast: 'Café',
+  breakfast: 'Café da Manhã',
   lunch: 'Almoço',
   dinner: 'Jantar',
 }
 
-function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const [hover, setHover] = useState(0)
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          className={cn(
-            'w-4 h-4 cursor-pointer transition-colors',
-            (hover || value) >= star
-              ? 'fill-yellow-400 text-yellow-400'
-              : 'text-muted-foreground hover:text-yellow-200',
-          )}
-          onMouseEnter={() => setHover(star)}
-          onMouseLeave={() => setHover(0)}
-          onClick={(e) => {
-            e.stopPropagation()
-            onChange(star)
-          }}
-        />
-      ))}
-    </div>
-  )
+const mealIcons: Record<MealType, React.ElementType> = {
+  breakfast: Coffee,
+  lunch: Sun,
+  dinner: Moon,
+}
+
+const difficultyStyles = {
+  easy: 'bg-green-100 text-green-600 border-l-2 border-green-500 dark:bg-green-900/30 dark:text-green-400',
+  medium:
+    'bg-yellow-100 text-yellow-600 border-l-2 border-yellow-500 dark:bg-yellow-900/30 dark:text-yellow-400',
+  hard: 'bg-red-100 text-red-600 border-l-2 border-red-500 dark:bg-red-900/30 dark:text-red-400',
+}
+
+const difficultyLabels = {
+  easy: 'Fácil',
+  medium: 'Médio',
+  hard: 'Difícil',
 }
 
 export default function Meals() {
@@ -98,6 +103,10 @@ export default function Meals() {
     endDateStr,
   )
 
+  const getMeal = (day: Date, type: MealType) => {
+    return meals.find((m) => m.date.startsWith(format(day, 'yyyy-MM-dd')) && m.meal_type === type)
+  }
+
   const handleSwapTarget = async (dateStr: string, mealType: MealType, existingMeal?: Meal) => {
     if (!swapSource) return
     if (existingMeal && existingMeal.id === swapSource.id) {
@@ -113,9 +122,9 @@ export default function Meals() {
       } else {
         await updateMeal(swapSource.id, { date: dateStr, meal_type: mealType })
       }
-      toast({ title: 'Trocado', description: 'Refeições trocadas com sucesso.' })
+      toast({ title: 'Sucesso', description: 'Refeições movidas com sucesso.' })
     } catch {
-      toast({ title: 'Erro', description: 'Falha ao trocar refeições.', variant: 'destructive' })
+      toast({ title: 'Erro', description: 'Falha ao mover refeições.', variant: 'destructive' })
     }
     setSwapSource(null)
   }
@@ -154,13 +163,265 @@ export default function Meals() {
     }
   }
 
+  const renderCell = (day: Date, type: MealType) => {
+    const meal = getMeal(day, type)
+    const isSwapTargetMode = !!swapSource && swapSource?.id !== meal?.id
+    const isSwapSource = swapSource?.id === meal?.id
+
+    if (!meal) {
+      return (
+        <div
+          key={`${day.toISOString()}-${type}`}
+          className={cn(
+            'min-h-24 border border-dashed rounded-md p-3 flex flex-col items-center justify-center text-muted-foreground transition-colors h-full',
+            isSwapTargetMode
+              ? 'border-primary bg-primary/5 cursor-pointer ring-2 ring-primary ring-offset-1'
+              : 'hover:bg-accent/50 cursor-pointer',
+          )}
+          onClick={() => {
+            if (isSwapTargetMode)
+              handleSwapTarget(`${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`, type)
+            else
+              setEditState({
+                isOpen: true,
+                date: `${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`,
+                type,
+              })
+          }}
+        >
+          {isSwapTargetMode ? (
+            <span className="text-sm text-primary font-medium text-center leading-tight">
+              Mover para cá
+            </span>
+          ) : (
+            <>
+              <Plus className="w-5 h-5 mb-1 opacity-50" />
+              <span className="text-xs font-medium opacity-70">Adicionar</span>
+            </>
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <div
+        key={meal.id}
+        onClick={() =>
+          isSwapTargetMode &&
+          handleSwapTarget(`${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`, type, meal)
+        }
+        className={cn(
+          'min-h-24 border border-solid rounded-md p-3 bg-card shadow-sm flex flex-col relative transition-all group h-full',
+          isSwapTargetMode
+            ? 'cursor-pointer border-primary ring-2 ring-primary ring-offset-1'
+            : 'hover:shadow-md',
+          isSwapSource && 'opacity-50 ring-2 ring-dashed ring-muted-foreground',
+          meal.is_cooked && 'bg-muted/30 border-muted opacity-80',
+        )}
+      >
+        <div className="text-[16px] font-bold text-primary mb-2 leading-tight pr-6 line-clamp-2">
+          {meal.dish}
+        </div>
+
+        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setEditState({ isOpen: true, meal })
+            }}
+            className="p-1.5 bg-background/90 backdrop-blur rounded-md border shadow-sm hover:bg-accent"
+            title="Editar"
+          >
+            <Edit className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setSwapSource(meal)
+            }}
+            className="p-1.5 bg-background/90 backdrop-blur rounded-md border shadow-sm hover:bg-accent"
+            title="Mover / Trocar"
+          >
+            <ArrowRightLeft className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between mb-3 mt-auto">
+          <span className="text-[12px] text-muted-foreground flex items-center gap-1 font-medium">
+            <Clock className="w-3 h-3" /> {meal.prep_time}m
+          </span>
+          <div
+            className={cn(
+              'text-[12px] px-1.5 py-0.5 font-semibold rounded-sm',
+              difficultyStyles[meal.difficulty],
+            )}
+          >
+            {difficultyLabels[meal.difficulty]}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-border/60 pt-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              const nextRating = ((meal.family_rating || 0) % 5) + 1
+              updateMeal(meal.id, { family_rating: nextRating })
+            }}
+            className="flex items-center gap-1 hover:bg-accent px-1.5 py-0.5 rounded transition-colors -ml-1.5"
+            title="Clique para avaliar"
+          >
+            <Star className="w-3.5 h-3.5 text-accent fill-accent" />
+            <span className="text-[12px] font-bold text-accent">{meal.family_rating || 0}</span>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              updateMeal(meal.id, { is_cooked: !meal.is_cooked })
+            }}
+            className={cn(
+              'text-[11px] font-bold px-2 py-1 rounded transition-colors -mr-1.5',
+              meal.is_cooked
+                ? 'text-green-700 bg-green-100 dark:bg-green-900/40 dark:text-green-400'
+                : 'text-muted-foreground bg-muted hover:bg-accent hover:text-foreground',
+            )}
+          >
+            {meal.is_cooked ? (
+              <>
+                <CheckCircle2 className="w-3 h-3 inline mr-1" />
+                Feito
+              </>
+            ) : (
+              'Marcar'
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const renderDayView = (day: Date) => (
+    <div className="flex flex-col gap-4 px-1 pb-4">
+      <div className="text-center md:hidden mb-2">
+        <div className="text-2xl font-bold capitalize text-primary">
+          {format(day, 'EEEE', { locale: ptBR })}
+        </div>
+        <div className="text-sm font-medium text-muted-foreground">{format(day, 'dd/MM/yyyy')}</div>
+      </div>
+      {mealTypes.map((type) => {
+        const meal = getMeal(day, type)
+        const Icon = mealIcons[type]
+
+        return (
+          <div
+            key={type}
+            className="border rounded-xl p-4 md:p-6 bg-card shadow-sm flex flex-col relative transition-all hover:shadow-md"
+          >
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border/50">
+              <Icon className="w-5 h-5 text-primary" />
+              <span className="font-bold text-sm uppercase tracking-wider text-muted-foreground">
+                {mealLabels[type]}
+              </span>
+            </div>
+
+            {meal ? (
+              <div className="space-y-4">
+                <div className="flex justify-between items-start gap-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight">
+                    {meal.dish}
+                  </h3>
+                  <button
+                    onClick={() => setEditState({ isOpen: true, meal })}
+                    className="p-2 border rounded-md hover:bg-accent text-muted-foreground shrink-0"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <span className="text-sm text-muted-foreground flex items-center gap-1.5 font-medium bg-accent/50 px-2.5 py-1 rounded-md">
+                    <Clock className="w-4 h-4" /> {meal.prep_time} min
+                  </span>
+                  <div
+                    className={cn(
+                      'text-sm px-2.5 py-1 font-semibold rounded-md flex items-center',
+                      difficultyStyles[meal.difficulty],
+                    )}
+                  >
+                    {difficultyLabels[meal.difficulty]}
+                  </div>
+                  <button
+                    onClick={() =>
+                      updateMeal(meal.id, { family_rating: ((meal.family_rating || 0) % 5) + 1 })
+                    }
+                    className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/40 transition-colors px-2.5 py-1 rounded-md text-amber-700 dark:text-amber-400 text-sm font-bold"
+                  >
+                    <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    {meal.family_rating || 0}/5
+                  </button>
+                </div>
+
+                {meal.ingredients?.length > 0 && (
+                  <div className="bg-accent/30 rounded-lg p-4 mt-2">
+                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <ChefHat className="w-4 h-4 text-muted-foreground" /> Ingredientes
+                    </h4>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                      {meal.ingredients.map((ing, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/50 shrink-0" />
+                          <span className="line-clamp-2">{ing}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="pt-4 mt-2 flex justify-end">
+                  <Button
+                    variant={meal.is_cooked ? 'outline' : 'default'}
+                    className={cn(
+                      'gap-2 w-full sm:w-auto transition-colors',
+                      meal.is_cooked &&
+                        'bg-green-50 text-green-700 border-green-200 hover:bg-green-100 hover:text-green-800 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
+                    )}
+                    onClick={() => updateMeal(meal.id, { is_cooked: !meal.is_cooked })}
+                  >
+                    {meal.is_cooked ? <CheckCircle2 className="w-4 h-4" /> : null}
+                    {meal.is_cooked ? 'Prato Concluído' : 'Marcar como Feito'}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div
+                className="py-10 border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-muted-foreground hover:bg-accent/50 cursor-pointer transition-colors"
+                onClick={() =>
+                  setEditState({
+                    isOpen: true,
+                    date: `${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`,
+                    type,
+                  })
+                }
+              >
+                <Plus className="w-8 h-8 mb-3 opacity-40" />
+                <span className="font-medium text-sm">
+                  Adicionar {mealLabels[type].toLowerCase()}
+                </span>
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+
   if (meals.length === 0 && !isLoading && !isGenerating) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         <h1 className="text-3xl font-bold tracking-tight">Cardápio da Semana</h1>
-        <div className="text-center py-20 space-y-6 bg-card rounded-lg border shadow-sm">
-          <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center">
-            <ChefHat className="w-12 h-12 text-muted-foreground opacity-50" />
+        <div className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-card rounded-lg border shadow-sm">
+          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center">
+            <ChefHat className="w-16 h-16 text-muted-foreground opacity-50" />
           </div>
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold tracking-tight">Nenhum cardápio gerado</h2>
@@ -168,7 +429,16 @@ export default function Meals() {
               Crie um plano inteligente usando IA. Baseado na sua despensa e restrições familiares.
             </p>
           </div>
-          <Button size="lg" onClick={generate} disabled={!familyId} className="gap-2">
+          <Button
+            size="lg"
+            onClick={generate}
+            disabled={!familyId}
+            className={cn(
+              'gap-2 bg-primary text-primary-foreground',
+              !familyId &&
+                'bg-gray-400 text-gray-200 cursor-not-allowed hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-400 hover:dark:bg-gray-700',
+            )}
+          >
             <ChefHat className="w-5 h-5" /> Gerar Cardápio Inteligente
           </Button>
         </div>
@@ -180,8 +450,8 @@ export default function Meals() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Cardápio da Semana</h1>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-2 bg-card border px-3 py-1.5 rounded-full">
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="hidden md:flex items-center space-x-2 bg-card border px-3 py-1.5 rounded-full">
             <Label
               className={cn(
                 viewMode === 'day' ? 'text-primary' : 'text-muted-foreground',
@@ -205,221 +475,119 @@ export default function Meals() {
               Semana
             </Label>
           </div>
-          <Button onClick={generate} disabled={isGenerating || !familyId} className="gap-2">
+          <Button
+            onClick={generate}
+            disabled={isGenerating || !familyId}
+            className={cn(
+              'gap-2 w-full sm:w-auto bg-primary text-primary-foreground',
+              (isGenerating || !familyId) &&
+                'bg-gray-400 text-gray-200 cursor-not-allowed hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-400 hover:dark:bg-gray-700',
+            )}
+          >
             {isGenerating ? (
-              <Clock className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <ChefHat className="w-4 h-4" />
             )}
-            Gerar Cardápio
+            {isGenerating ? 'Gerando...' : 'Gerar Cardápio'}
           </Button>
         </div>
       </div>
 
       {isLoading || isGenerating ? (
-        <div className="grid grid-cols-1 lg:grid-cols-7 gap-6 lg:gap-4 animate-pulse">
-          {days.map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-6 w-24 mx-auto" />
-              <Skeleton className="h-32" />
-              <Skeleton className="h-32" />
-              <Skeleton className="h-32" />
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="hidden md:grid grid-cols-[120px_repeat(7,minmax(0,1fr))] gap-4 animate-pulse">
+            <div className="p-2" />
+            {days.map((_, i) => (
+              <div key={`h-${i}`} className="space-y-2 pb-2 flex flex-col items-center">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+            ))}
+            {mealTypes.map((type) => (
+              <React.Fragment key={`r-${type}`}>
+                <div className="flex items-start gap-2 pt-4">
+                  <Skeleton className="h-5 w-5 rounded-full shrink-0" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                {days.map((_, i) => (
+                  <Skeleton key={`c-${type}-${i}`} className="h-28 w-full rounded-md" />
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="md:hidden space-y-4 animate-pulse px-2">
+            <Skeleton className="h-8 w-40 mx-auto mb-6" />
+            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
+          </div>
+        </>
       ) : (
-        <div className={cn('w-full transition-all', viewMode === 'day' && 'max-w-2xl mx-auto')}>
-          {viewMode === 'day' && (
-            <div className="flex gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
-              {days.map((day) => (
-                <Button
-                  key={day.toISOString()}
-                  variant={isSameDay(selectedDate, day) ? 'default' : 'outline'}
-                  onClick={() => setSelectedDate(day)}
-                  className="min-w-fit"
-                >
-                  {format(day, 'EEE, dd/MM', { locale: ptBR })}
-                </Button>
-              ))}
+        <>
+          {/* Mobile Swipeable View */}
+          <div className="block md:hidden">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {days.map((day) => (
+                  <CarouselItem key={day.toISOString()}>{renderDayView(day)}</CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+            <div className="mt-2 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+              <ArrowRightLeft className="w-4 h-4 opacity-50" /> Deslize para ver a semana
             </div>
-          )}
+          </div>
 
-          <div
-            className={cn(
-              viewMode === 'week'
-                ? 'grid grid-cols-1 lg:grid-cols-7 gap-6 lg:gap-4'
-                : 'flex flex-col gap-4',
-            )}
-          >
-            {(viewMode === 'day' ? [selectedDate] : days).map((day) => (
-              <div key={day.toISOString()} className="flex flex-col gap-3 min-w-[260px] lg:min-w-0">
-                {viewMode === 'week' && (
-                  <>
-                    <h3 className="font-semibold text-center capitalize">
+          {/* Desktop View */}
+          <div className="hidden md:block">
+            {viewMode === 'week' ? (
+              <div className="grid grid-cols-[120px_repeat(7,minmax(0,1fr))] gap-4 items-stretch">
+                <div className="p-2" />
+                {days.map((day) => (
+                  <div key={day.toISOString()} className="text-center pb-2">
+                    <div className="font-bold capitalize text-base">
                       {format(day, 'EEEE', { locale: ptBR })}
-                    </h3>
-                    <div className="text-xs text-center text-muted-foreground -mt-2 mb-2">
+                    </div>
+                    <div className="text-sm text-muted-foreground font-medium">
                       {format(day, 'dd/MM')}
                     </div>
-                  </>
-                )}
-
+                  </div>
+                ))}
                 {mealTypes.map((type) => {
-                  const meal = meals.find(
-                    (m) => m.date.startsWith(format(day, 'yyyy-MM-dd')) && m.meal_type === type,
-                  )
-                  const isSwapSource = swapSource?.id === meal?.id && meal !== undefined
-                  const isSwapTargetMode = !!swapSource && !isSwapSource
-
-                  if (!meal) {
-                    return (
-                      <Card
-                        key={type}
-                        className={cn(
-                          'min-h-[140px] flex flex-col border-dashed bg-muted/30 transition-all',
-                          isSwapTargetMode &&
-                            'ring-2 ring-primary ring-offset-2 cursor-pointer border-solid bg-accent/50',
-                        )}
-                        onClick={() =>
-                          isSwapTargetMode &&
-                          handleSwapTarget(`${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`, type)
-                        }
-                      >
-                        <CardHeader className="p-3 pb-2">
-                          <Badge variant="secondary" className="w-fit">
-                            {mealLabels[type]}
-                          </Badge>
-                        </CardHeader>
-                        <CardContent className="p-3 pt-0 flex-grow flex items-center justify-center">
-                          {isSwapTargetMode ? (
-                            <span className="text-sm text-primary font-medium">Mover para cá</span>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setEditState({
-                                  isOpen: true,
-                                  date: `${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`,
-                                  type,
-                                })
-                              }}
-                            >
-                              <Plus className="w-4 h-4 mr-2" /> Adicionar
-                            </Button>
-                          )}
-                        </CardContent>
-                      </Card>
-                    )
-                  }
-
+                  const Icon = mealIcons[type]
                   return (
-                    <Card
-                      key={meal.id}
-                      className={cn(
-                        'relative transition-all duration-200 flex flex-col h-full',
-                        isSwapTargetMode &&
-                          'ring-2 ring-primary ring-offset-2 cursor-pointer hover:bg-accent/50',
-                        isSwapSource && 'opacity-50 ring-2 ring-dashed ring-muted-foreground',
-                        meal.is_cooked && 'bg-muted/50',
-                      )}
-                      onClick={() =>
-                        isSwapTargetMode &&
-                        handleSwapTarget(`${format(day, 'yyyy-MM-dd')} 12:00:00.000Z`, type, meal)
-                      }
-                    >
-                      <CardHeader className="p-3 pb-0">
-                        <div className="flex justify-between items-start">
-                          <Badge variant="outline">{mealLabels[type]}</Badge>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setEditState({ isOpen: true, meal })
-                              }}
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setSwapSource(meal)
-                                toast({
-                                  title: 'Trocar Refeição',
-                                  description: 'Selecione o novo local.',
-                                })
-                              }}
-                            >
-                              <ArrowRightLeft className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </div>
-                        <CardTitle
-                          className={cn(
-                            'mt-2',
-                            viewMode === 'day' ? 'text-xl' : 'text-base leading-tight',
-                          )}
-                        >
-                          {meal.dish}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-3 pt-2 space-y-3 flex-grow">
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> {meal.prep_time}m
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <ChefHat className="w-3 h-3" /> {meal.difficulty}
-                          </span>
-                        </div>
-                        {viewMode === 'day' && meal.ingredients?.length > 0 && (
-                          <div className="text-sm">
-                            <span className="font-medium">Ingredientes:</span>
-                            <ul className="list-disc pl-4 mt-1 text-muted-foreground">
-                              {meal.ingredients.map((ing, idx) => (
-                                <li key={idx}>{ing}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        <div className="flex flex-col gap-1.5 pt-3 mt-3 border-t">
-                          <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">
-                            Avaliação da Família
-                          </span>
-                          <StarRating
-                            value={meal.family_rating || 0}
-                            onChange={(v) => updateMeal(meal.id, { family_rating: v })}
-                          />
-                        </div>
-                      </CardContent>
-                      <CardFooter className="p-3 pt-0">
-                        <Button
-                          size="sm"
-                          variant={meal.is_cooked ? 'default' : 'outline'}
-                          className="w-full gap-2"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            updateMeal(meal.id, { is_cooked: !meal.is_cooked })
-                          }}
-                        >
-                          <CheckCircle2 className="w-4 h-4" />{' '}
-                          {meal.is_cooked ? 'Feito' : 'Marcar como feito'}
-                        </Button>
-                      </CardFooter>
-                    </Card>
+                    <React.Fragment key={type}>
+                      <div className="flex items-start justify-start pt-4 gap-2">
+                        <Icon className="w-5 h-5 text-muted-foreground shrink-0" />
+                        <span className="font-semibold text-sm leading-tight mt-0.5">
+                          {mealLabels[type]}
+                        </span>
+                      </div>
+                      {days.map((day) => renderCell(day, type))}
+                    </React.Fragment>
                   )
                 })}
               </div>
-            ))}
+            ) : (
+              <div className="max-w-4xl mx-auto">
+                <div className="flex gap-2 pb-6 overflow-x-auto scrollbar-hide">
+                  {days.map((day) => (
+                    <Button
+                      key={day.toISOString()}
+                      variant={isSameDay(selectedDate, day) ? 'default' : 'outline'}
+                      onClick={() => setSelectedDate(day)}
+                      className="flex-1 min-w-fit"
+                    >
+                      {format(day, 'EEEE', { locale: ptBR })}
+                    </Button>
+                  ))}
+                </div>
+                {renderDayView(selectedDate)}
+              </div>
+            )}
           </div>
-        </div>
+        </>
       )}
 
       <Dialog
@@ -468,11 +636,12 @@ export default function Meals() {
               <Label>Ingredientes (separados por vírgula)</Label>
               <Textarea
                 name="ingredients"
-                rows={3}
+                rows={4}
                 defaultValue={editState.meal?.ingredients?.join(', ')}
+                placeholder="Arroz, Feijão, Frango..."
               />
             </div>
-            <DialogFooter className="pt-4 border-t">
+            <DialogFooter className="pt-4 border-t gap-2 sm:gap-0">
               <div className="flex justify-between w-full">
                 {editState.meal ? (
                   <Button
