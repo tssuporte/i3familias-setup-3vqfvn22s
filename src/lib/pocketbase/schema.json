@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-06T01:19:12.363Z",
+  "generatedAt": "2026-06-06T01:24:48.687Z",
   "collections": [
     {
       "name": "users",
@@ -43,6 +43,144 @@
         "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
         "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
       ]
+    },
+    {
+      "name": "families",
+      "type": "base",
+      "apiRules": {
+        "list": "user_id = @request.auth.id",
+        "view": "user_id = @request.auth.id",
+        "create": "user_id = @request.auth.id",
+        "update": "user_id = @request.auth.id",
+        "delete": "user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "user_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "timezone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "currency",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_families_user_id ON families (user_id)"]
+    },
+    {
+      "name": "family_members",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "birth_date",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "photo_url",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "member_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["child", "adult"]
+        },
+        {
+          "name": "education_type",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["traditional", "homeschooling"]
+        },
+        {
+          "name": "dietary_restrictions",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "pin_code",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_family_members_family_id ON family_members (family_id)"]
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { MainLayout } from '@/components/layouts/MainLayout'
 import { KioskLayout } from '@/components/layouts/KioskLayout'
 import { ProtectedRoute } from '@/components/layouts/ProtectedRoute'
+import { FamilyProvider, FamilyRequire } from '@/contexts/FamilyContext'
 import NotFound from './pages/NotFound'
 
 // Public Pages
@@ -17,6 +18,7 @@ const Login = lazy(() => import('./pages/auth/Login'))
 const Signup = lazy(() => import('./pages/auth/Signup'))
 
 // App Pages
+const Onboarding = lazy(() => import('./pages/app/Onboarding'))
 const Dashboard = lazy(() => import('./pages/app/Dashboard'))
 const Tasks = lazy(() => import('./pages/app/Tasks'))
 const Pantry = lazy(() => import('./pages/app/Pantry'))
@@ -51,21 +53,32 @@ const App = () => (
                 <Route
                   element={
                     <ProtectedRoute>
-                      <MainLayout />
+                      <FamilyProvider>
+                        <Outlet />
+                      </FamilyProvider>
                     </ProtectedRoute>
                   }
                 >
-                  <Route path="/app" element={<Dashboard />} />
-                  <Route path="/app/tasks" element={<Tasks />} />
-                  <Route path="/app/pantry" element={<Pantry />} />
-                  <Route path="/app/meals" element={<Meals />} />
-                  <Route path="/app/shopping" element={<Shopping />} />
-                  <Route path="/app/calendar" element={<Calendar />} />
-                  <Route path="/app/studies" element={<Studies />} />
-                  <Route path="/app/finances" element={<Finances />} />
-                  <Route path="/app/notices" element={<Notices />} />
-                  <Route path="/app/reports" element={<Reports />} />
-                  <Route path="/app/settings" element={<Settings />} />
+                  <Route path="/app/onboarding" element={<Onboarding />} />
+                  <Route
+                    element={
+                      <FamilyRequire>
+                        <MainLayout />
+                      </FamilyRequire>
+                    }
+                  >
+                    <Route path="/app" element={<Dashboard />} />
+                    <Route path="/app/tasks" element={<Tasks />} />
+                    <Route path="/app/pantry" element={<Pantry />} />
+                    <Route path="/app/meals" element={<Meals />} />
+                    <Route path="/app/shopping" element={<Shopping />} />
+                    <Route path="/app/calendar" element={<Calendar />} />
+                    <Route path="/app/studies" element={<Studies />} />
+                    <Route path="/app/finances" element={<Finances />} />
+                    <Route path="/app/notices" element={<Notices />} />
+                    <Route path="/app/reports" element={<Reports />} />
+                    <Route path="/app/settings" element={<Settings />} />
+                  </Route>
                 </Route>
 
                 {/* Protected Kiosk Route */}
