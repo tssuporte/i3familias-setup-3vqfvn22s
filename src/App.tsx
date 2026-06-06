@@ -22,6 +22,7 @@ const Onboarding = lazy(() => import('./pages/app/Onboarding'))
 const ChildView = lazy(() => import('./pages/app/ChildView'))
 const Dashboard = lazy(() => import('./pages/app/Dashboard'))
 const Tasks = lazy(() => import('./pages/app/Tasks'))
+const AdultTasks = lazy(() => import('./pages/app/AdultTasks'))
 const Pantry = lazy(() => import('./pages/app/Pantry'))
 const Meals = lazy(() => import('./pages/app/Meals'))
 const Shopping = lazy(() => import('./pages/app/Shopping'))
@@ -73,6 +74,7 @@ const App = () => (
                   >
                     <Route path="/app" element={<Dashboard />} />
                     <Route path="/app/tasks" element={<Tasks />} />
+                    <Route path="/app/tasks/adult" element={<AdultTasks />} />
                     <Route path="/app/pantry" element={<Pantry />} />
                     <Route path="/app/meals" element={<Meals />} />
                     <Route path="/app/shopping" element={<Shopping />} />

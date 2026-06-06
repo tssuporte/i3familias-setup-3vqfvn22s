@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-06T09:40:58.380Z",
+  "generatedAt": "2026-06-06T09:47:22.698Z",
   "collections": [
     {
       "name": "users",
@@ -244,6 +244,331 @@
         "CREATE INDEX idx_notices_family ON family_notices (family_id)",
         "CREATE INDEX idx_notices_status ON family_notices (status)"
       ]
+    },
+    {
+      "name": "tasks_children",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "assigned_to",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "recurrence",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["once", "daily", "weekly", "custom"]
+        },
+        {
+          "name": "due_time",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "estimated_minutes",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "stars_value",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "penalty_stars",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "requires_photo",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["pending", "completed", "overdue"]
+        },
+        {
+          "name": "completed_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "photo_url",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "tasks_adults",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "assigned_to",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "created_by",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "due_date",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "due_time",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "recurrence",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["once", "daily", "weekly", "custom"]
+        },
+        {
+          "name": "priority",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["low", "medium", "high"]
+        },
+        {
+          "name": "reminder_time",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["pending", "completed", "overdue"]
+        },
+        {
+          "name": "completed_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "week_leader",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "week_start_date",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "leader_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "bonus_stars",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "week_leader_confirmations",
+      "type": "base",
+      "apiRules": {
+        "list": "week_leader_id.family_id.user_id = @request.auth.id",
+        "view": "week_leader_id.family_id.user_id = @request.auth.id",
+        "create": "week_leader_id.family_id.user_id = @request.auth.id",
+        "update": "week_leader_id.family_id.user_id = @request.auth.id",
+        "delete": "week_leader_id.family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "week_leader_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "week_leader"
+        },
+        {
+          "name": "sibling_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "task_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "tasks_children"
+        },
+        {
+          "name": "confirmed",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "confirmed_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
     }
   ]
 }
