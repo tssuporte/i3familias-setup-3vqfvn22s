@@ -31,8 +31,6 @@ export const getPantryItems = (familyId: string) =>
   pb.collection('pantry').getFullList({ filter: `family_id = "${familyId}"` })
 
 export const getMealsForWeek = (familyId: string, startDate: string, endDate: string) =>
-  pb
-    .collection('meals')
-    .getFullList({
-      filter: `family_id = "${familyId}" && date >= "${startDate}" && date <= "${endDate}"`,
-    })
+  pb.collection('meals').getFullList({
+    filter: `family_id = "${familyId}" && date >= "${startDate}" && date <= "${endDate}"`,
+  })
