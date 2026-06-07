@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-07T09:41:58.963Z",
+  "generatedAt": "2026-06-07T09:48:06.458Z",
   "collections": [
     {
       "name": "users",
@@ -1242,6 +1242,55 @@
         "CREATE INDEX idx_notifications_user ON notifications (user_id)",
         "CREATE INDEX idx_notifications_read ON notifications (read)",
         "CREATE INDEX idx_notifications_created ON notifications (created)"
+      ]
+    },
+    {
+      "name": "family_settings",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && family_id.user_id = @request.auth.id",
+        "view": "@request.auth.id != '' && family_id.user_id = @request.auth.id",
+        "create": "@request.auth.id != '' && family_id.user_id = @request.auth.id",
+        "update": "@request.auth.id != '' && family_id.user_id = @request.auth.id",
+        "delete": "@request.auth.id != '' && family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "setting_key",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "setting_value",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_family_settings_key ON family_settings (family_id, setting_key)"
       ]
     }
   ]
