@@ -27,6 +27,7 @@ import {
 
 const items = [
   { title: 'Dashboard', url: '/app', icon: Home },
+  { title: 'Painel do Adulto', url: '/dashboard', icon: BarChart3 },
   { title: 'Assistente Familiar', url: '/app/assistant', icon: Bot },
   { title: 'Tarefas', url: '/app/tasks', icon: CheckSquare },
   { title: 'Despensa', url: '/app/pantry', icon: ShoppingBasket },

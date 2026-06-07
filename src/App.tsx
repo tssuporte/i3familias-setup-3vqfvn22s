@@ -21,6 +21,7 @@ const Signup = lazy(() => import('./pages/auth/Signup'))
 const Onboarding = lazy(() => import('./pages/app/Onboarding'))
 const ChildView = lazy(() => import('./pages/app/ChildView'))
 const Dashboard = lazy(() => import('./pages/app/Dashboard'))
+const AdultDashboard = lazy(() => import('./pages/app/AdultDashboard'))
 const Tasks = lazy(() => import('./pages/app/Tasks'))
 const AdultTasks = lazy(() => import('./pages/app/AdultTasks'))
 const Pantry = lazy(() => import('./pages/app/Pantry'))
@@ -77,6 +78,7 @@ const App = () => (
                     }
                   >
                     <Route path="/app" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<AdultDashboard />} />
                     <Route path="/app/tasks" element={<Tasks />} />
                     <Route path="/app/tasks/adult" element={<AdultTasks />} />
                     <Route path="/app/pantry" element={<Pantry />} />
