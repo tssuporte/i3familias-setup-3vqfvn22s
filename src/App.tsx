@@ -30,6 +30,7 @@ const Calendar = lazy(() => import('./pages/app/Calendar'))
 const Studies = lazy(() => import('./pages/app/Studies'))
 const Finances = lazy(() => import('./pages/app/Finances'))
 const Notices = lazy(() => import('./pages/app/Notices'))
+const Notifications = lazy(() => import('./pages/app/Notifications'))
 const Reports = lazy(() => import('./pages/app/Reports'))
 const Settings = lazy(() => import('./pages/app/Settings'))
 const Assistant = lazy(() => import('./pages/app/Assistant'))
@@ -85,6 +86,7 @@ const App = () => (
                     <Route path="/app/studies" element={<Studies />} />
                     <Route path="/app/finances" element={<Finances />} />
                     <Route path="/app/notices" element={<Notices />} />
+                    <Route path="/app/notifications" element={<Notifications />} />
                     <Route path="/app/reports" element={<Reports />} />
                     <Route path="/app/settings" element={<Settings />} />
                     <Route path="/app/assistant" element={<Assistant />} />

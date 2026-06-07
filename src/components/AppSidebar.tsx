@@ -37,6 +37,7 @@ const items = [
   { title: 'Finanças', url: '/app/finances', icon: DollarSign },
   { title: 'Recompensas', url: '/app/rewards', icon: Star },
   { title: 'Avisos', url: '/app/notices', icon: Bell },
+  { title: 'Notificações', url: '/app/notifications', icon: Bell },
   { title: 'Relatórios', url: '/app/reports', icon: BarChart3 },
   { title: 'Configurações', url: '/app/settings', icon: Settings },
 ]
