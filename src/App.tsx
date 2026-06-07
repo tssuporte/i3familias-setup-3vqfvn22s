@@ -10,6 +10,7 @@ import { MainLayout } from '@/components/layouts/MainLayout'
 import { KioskLayout } from '@/components/layouts/KioskLayout'
 import { ProtectedRoute } from '@/components/layouts/ProtectedRoute'
 import { FamilyProvider, FamilyRequire } from '@/contexts/FamilyContext'
+import { NotificationProvider } from '@/hooks/use-notifications'
 import NotFound from './pages/NotFound'
 
 // Public Pages
@@ -64,7 +65,9 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <FamilyProvider>
-                        <Outlet />
+                        <NotificationProvider>
+                          <Outlet />
+                        </NotificationProvider>
                       </FamilyProvider>
                     </ProtectedRoute>
                   }

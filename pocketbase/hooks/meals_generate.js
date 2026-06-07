@@ -15,7 +15,19 @@ routerAdd(
     const family = $app.findRecordById('families', familyId)
     if (family.getString('user_id') !== userId) return e.forbiddenError('Not your family')
 
-    const prompt = `Por favor, gere o cardápio de 7 dias consecutivos, a partir do dia ${startDate}. Siga RIGOROSAMENTE o formato JSON array solicitado no prompt do sistema.`
+    const pantryItems = $app.findRecordsByFilter(
+      'pantry',
+      `family_id = '${familyId}' && quantity > 0`,
+      'expiry_date',
+      50,
+      0,
+    )
+    const inventory = pantryItems
+      .map((p) => `${p.getString('name')} (${p.getInt('quantity')} ${p.getString('unit')})`)
+      .join(', ')
+
+    const prompt = `Por favor, gere o cardápio de 7 dias consecutivos, a partir do dia ${startDate}. Siga RIGOROSAMENTE o formato JSON array solicitado no prompt do sistema.
+A família possui os seguintes itens na despensa que devem ser priorizados (especialmente os próximos ao vencimento): ${inventory || 'nenhum item específico'}.`
 
     const result = $ai.agent('meal-planner').chat({
       user_id: userId,
@@ -73,6 +85,20 @@ routerAdd(
         }
         createdMeals.push(exported)
       }
+
+      const notif = new Record(txApp.findCollectionByNameOrId('notifications'))
+      notif.set('family_id', familyId)
+      notif.set('user_id', family.getString('user_id'))
+      notif.set('type', 'system')
+      notif.set('title', 'Cardápio Gerado')
+      notif.set('message', 'Cardápio gerado usando itens da despensa')
+      txApp.save(notif)
+
+      const audit = new Record(txApp.findCollectionByNameOrId('audit_log'))
+      audit.set('family_id', familyId)
+      audit.set('event_type', 'flow_meal_planning')
+      audit.set('description', 'Generated meals using pantry inventory')
+      txApp.save(audit)
     })
 
     return e.json(200, { success: true, meals: createdMeals })
