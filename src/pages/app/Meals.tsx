@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import pb from '@/lib/pocketbase/client'
 import { startOfWeek, addDays, format, isSameDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
