@@ -12,6 +12,7 @@ import {
   BarChart3,
   Settings,
   Star,
+  Bot,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -26,6 +27,7 @@ import {
 
 const items = [
   { title: 'Dashboard', url: '/app', icon: Home },
+  { title: 'Assistente Familiar', url: '/app/assistant', icon: Bot },
   { title: 'Tarefas', url: '/app/tasks', icon: CheckSquare },
   { title: 'Despensa', url: '/app/pantry', icon: ShoppingBasket },
   { title: 'Refeições', url: '/app/meals', icon: Utensils },
