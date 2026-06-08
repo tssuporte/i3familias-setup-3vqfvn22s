@@ -62,6 +62,7 @@ export default function Finances() {
   const [txType, setTxType] = useState<'income' | 'expense'>('expense')
   const [txAmount, setTxAmount] = useState('')
   const [txCategory, setTxCategory] = useState('')
+  const [txCategoryCustom, setTxCategoryCustom] = useState('')
   const [txDescription, setTxDescription] = useState('')
   const [txDate, setTxDate] = useState(format(new Date(), 'yyyy-MM-dd'))
   const [txAccount, setTxAccount] = useState('')
@@ -127,13 +128,14 @@ export default function Finances() {
         account_id: txAccount,
         amount: parseFloat(txAmount),
         type: txType,
-        category: txCategory,
+        category: txCategory === 'outra' ? txCategoryCustom : txCategory,
         description: txDescription,
         date: new Date(txDate).toISOString(),
       })
       setOpenNewTransaction(false)
       setTxAmount('')
       setTxCategory('')
+      setTxCategoryCustom('')
       setTxDescription('')
       toast({ title: 'Transação registrada!' })
     } catch (err) {
@@ -253,8 +255,34 @@ export default function Finances() {
                 </div>
                 <div className="space-y-2">
                   <Label>Categoria</Label>
-                  <Input value={txCategory} onChange={(e) => setTxCategory(e.target.value)} />
+                  <Select value={txCategory} onValueChange={setTxCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Alimentação">Alimentação</SelectItem>
+                      <SelectItem value="Educação">Educação</SelectItem>
+                      <SelectItem value="Saúde">Saúde</SelectItem>
+                      <SelectItem value="Transporte">Transporte</SelectItem>
+                      <SelectItem value="Lazer">Lazer</SelectItem>
+                      <SelectItem value="Moradia">Moradia</SelectItem>
+                      <SelectItem value="Vestuário">Vestuário</SelectItem>
+                      <SelectItem value="Pets">Pets</SelectItem>
+                      <SelectItem value="Serviços">Serviços</SelectItem>
+                      <SelectItem value="outra">Outra</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+                {txCategory === 'outra' && (
+                  <div className="space-y-2">
+                    <Label>Qual Categoria?</Label>
+                    <Input
+                      value={txCategoryCustom}
+                      onChange={(e) => setTxCategoryCustom(e.target.value)}
+                      placeholder="Nome da categoria"
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label>Descrição</Label>
                   <Input value={txDescription} onChange={(e) => setTxDescription(e.target.value)} />
