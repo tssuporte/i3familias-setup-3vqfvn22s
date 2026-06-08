@@ -6,11 +6,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
 import { Star, CheckCircle, TrendingUp, Gift, Clock, Trophy, ArrowRight } from 'lucide-react'
 import { useDashboard, DateRange } from '@/hooks/use-dashboard'
+import { useFamily } from '@/contexts/FamilyContext'
 
 const DashboardCharts = lazy(() => import('@/components/dashboard/DashboardCharts'))
 
 export default function AdultDashboard() {
   const navigate = useNavigate()
+  const { family } = useFamily()
   const [dateRange, setDateRange] = useState<DateRange>('week')
   const { toast } = useToast()
 
@@ -27,7 +29,7 @@ export default function AdultDashboard() {
     upcomingTasks,
     mostActiveChildren,
     isEmpty,
-  } = useDashboard(dateRange)
+  } = useDashboard(dateRange, family?.id ?? '')
 
   useEffect(() => {
     if (error) {

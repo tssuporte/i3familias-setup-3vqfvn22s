@@ -4,7 +4,7 @@ import { startOfWeek, startOfMonth, isAfter, parseISO, format } from 'date-fns'
 
 export type DateRange = 'week' | 'month' | 'all'
 
-export function useDashboard(dateRange: DateRange) {
+export function useDashboard(dateRange: DateRange, familyId: string) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -15,11 +15,12 @@ export function useDashboard(dateRange: DateRange) {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!familyId) {
+        setLoading(false)
+        return
+      }
       setLoading(true)
       try {
-        const family = await pb.collection('families').getFirstListItem('')
-        const familyId = family.id
-
         const [m, t, st, rr] = await Promise.all([
           pb
             .collection('family_members')
@@ -45,7 +46,7 @@ export function useDashboard(dateRange: DateRange) {
     }
 
     fetchData()
-  }, [])
+  }, [familyId])
 
   const aggregatedData = useMemo(() => {
     let startDate: Date | null = null
