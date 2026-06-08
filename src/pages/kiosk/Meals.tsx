@@ -28,11 +28,14 @@ export default function KioskMeals() {
   const [currentTime, setCurrentTime] = useState(new Date())
 
   const loadData = useCallback(async () => {
+    const userId = pb.authStore.record?.id
+    if (!userId) {
+      setLoading(false)
+      return
+    }
+
     try {
-      if (!pb.authStore.record?.id) return
-      const family = await pb
-        .collection('families')
-        .getFirstListItem(`user_id="${pb.authStore.record.id}"`)
+      const family = await pb.collection('families').getFirstListItem(`user_id='${userId}'`)
       if (family) {
         const todayStr = format(new Date(), 'yyyy-MM-dd')
         const data = await getMeals(family.id, todayStr, todayStr)
