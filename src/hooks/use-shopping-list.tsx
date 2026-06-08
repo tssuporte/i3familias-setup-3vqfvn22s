@@ -22,29 +22,45 @@ export function useShoppingList() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const budget = (currentFamily as any)?.shopping_budget || 500
 
-  const fetchItems = useCallback(async () => {
-    if (!currentFamily) return
-    try {
-      const data = await getShoppingItems(currentFamily.id)
-      setItems(data)
-    } catch (err) {
-      toast({
-        title: 'Erro',
-        description: 'Não foi possível carregar lista.',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, [currentFamily, toast])
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchItems = useCallback(
+    async (showLoading = false) => {
+      if (!currentFamily) {
+        return
+      }
+      if (showLoading) {
+        setLoading(true)
+      }
+      setError(null)
+      try {
+        const data = await getShoppingItems(currentFamily.id)
+        setItems(data)
+      } catch (err) {
+        setError('Não foi possível carregar a lista de compras.')
+        toast({
+          title: 'Erro',
+          description: 'Não foi possível carregar lista.',
+          variant: 'destructive',
+        })
+      } finally {
+        setLoading(false)
+      }
+    },
+    [currentFamily, toast],
+  )
 
   useEffect(() => {
     fetchItems()
   }, [fetchItems])
 
-  useRealtime<ShoppingItem>('shopping_items', () => {
-    fetchItems()
-  })
+  useRealtime<ShoppingItem>(
+    'shopping_items',
+    () => {
+      fetchItems()
+    },
+    !!currentFamily,
+  )
 
   const addItem = async (data: Partial<ShoppingItem>) => {
     if (!currentFamily) return
@@ -177,6 +193,7 @@ export function useShoppingList() {
   return {
     items,
     loading,
+    error,
     generating,
     budget,
     totalCost,
@@ -185,5 +202,6 @@ export function useShoppingList() {
     removeItem,
     clearPurchased,
     generateList,
+    fetchItems,
   }
 }

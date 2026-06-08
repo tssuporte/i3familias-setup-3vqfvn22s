@@ -41,6 +41,7 @@ export default function Shopping() {
   const {
     items,
     loading,
+    error,
     generating,
     budget,
     totalCost,
@@ -49,6 +50,7 @@ export default function Shopping() {
     removeItem,
     clearPurchased,
     generateList,
+    fetchItems,
   } = useShoppingList()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<ShoppingItem | null>(null)
@@ -208,13 +210,19 @@ export default function Shopping() {
         )}
       </div>
 
-      {items.length === 0 ? (
+      {error ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center border rounded-xl border-dashed border-red-200 bg-red-50/50 dark:bg-red-950/10">
+          <p className="text-red-500 mb-4">{error}</p>
+          <Button onClick={() => fetchItems(true)} variant="outline">
+            Tentar Novamente
+          </Button>
+        </div>
+      ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4 text-center border rounded-xl border-dashed bg-card/50">
           <ShoppingCart className="w-16 h-16 text-primary mb-4 opacity-80" />
           <h3 className="text-xl font-medium mb-2">Lista Vazia</h3>
           <p className="text-muted-foreground mb-6 max-w-sm">
-            Sua lista de compras está vazia. Adicione itens manualmente ou gere automaticamente a
-            partir da sua despensa e cardápio.
+            Sua lista de compras está vazia. Adicione itens para começar!
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button onClick={openAddModal} variant="default">
