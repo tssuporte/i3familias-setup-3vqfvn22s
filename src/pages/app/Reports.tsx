@@ -115,7 +115,10 @@ export default function Reports() {
           ])
 
         setMembers(membersData)
-        setTasks([...childTasks, ...adultTasks])
+        setTasks([
+          ...childTasks.map((t) => ({ ...t, _source: 'child' })),
+          ...adultTasks.map((t) => ({ ...t, _source: 'adult' })),
+        ])
         setStars(starsData)
         setRedemptions(redemptionsData)
 
@@ -163,7 +166,35 @@ export default function Reports() {
     const total = filteredTasks.length
     const completed = filteredTasks.filter((t) => t.status === 'completed').length
     const overdue = filteredTasks.filter((t) => t.status === 'overdue').length
-    return { total, completed, overdue }
+
+    const childTotal = filteredTasks.filter((t) => t._source === 'child').length
+    const adultTotal = filteredTasks.filter((t) => t._source === 'adult').length
+
+    const childCompleted = filteredTasks.filter(
+      (t) => t.status === 'completed' && t._source === 'child',
+    ).length
+    const adultCompleted = filteredTasks.filter(
+      (t) => t.status === 'completed' && t._source === 'adult',
+    ).length
+
+    const childOverdue = filteredTasks.filter(
+      (t) => t.status === 'overdue' && t._source === 'child',
+    ).length
+    const adultOverdue = filteredTasks.filter(
+      (t) => t.status === 'overdue' && t._source === 'adult',
+    ).length
+
+    return {
+      total,
+      completed,
+      overdue,
+      childTotal,
+      adultTotal,
+      childCompleted,
+      adultCompleted,
+      childOverdue,
+      adultOverdue,
+    }
   }, [filteredTasks])
 
   const chartData = useMemo(() => {
@@ -212,12 +243,24 @@ export default function Reports() {
 
   const handleExportCSV = () => {
     const headers = ['Título', 'Atribuído a', 'Status', 'Data de Criação']
-    const rows = filteredTasks.map((t) => [
-      `"${(t.name || '').replace(/"/g, '""')}"`,
-      `"${t.expand?.assigned_to?.name || 'Desconhecido'}"`,
-      t.status,
-      format(parseISO(t.created.replace(' ', 'T')), 'dd/MM/yyyy'),
-    ])
+    const rows = filteredTasks.map((t) => {
+      let assigneeName = 'Desconhecido'
+      if (t.expand?.assigned_to?.name) {
+        assigneeName = t.expand.assigned_to.name
+      } else {
+        const member = members.find((m) => m.id === t.assigned_to)
+        if (member?.name) {
+          assigneeName = member.name
+        }
+      }
+
+      return [
+        `"${(t.name || '').replace(/"/g, '""')}"`,
+        `"${assigneeName}"`,
+        t.status,
+        format(parseISO(t.created.replace(' ', 'T')), 'dd/MM/yyyy'),
+      ]
+    })
     const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -284,11 +327,34 @@ export default function Reports() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os membros</SelectItem>
-              {members.map((m) => (
-                <SelectItem key={m.id} value={m.id}>
-                  {m.name}
-                </SelectItem>
-              ))}
+              {members.filter((m) => m.member_type === 'child').length > 0 && (
+                <>
+                  <SelectItem value="children" disabled>
+                    — Somente Crianças —
+                  </SelectItem>
+                  {members
+                    .filter((m) => m.member_type === 'child')
+                    .map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                </>
+              )}
+              {members.filter((m) => m.member_type === 'adult').length > 0 && (
+                <>
+                  <SelectItem value="adults" disabled>
+                    — Somente Adultos —
+                  </SelectItem>
+                  {members
+                    .filter((m) => m.member_type === 'adult')
+                    .map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                </>
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -308,6 +374,11 @@ export default function Reports() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{taskStats.total}</div>
+                {selectedMember === 'all' && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {taskStats.childTotal} crianças · {taskStats.adultTotal} adultos
+                  </p>
+                )}
               </CardContent>
             </Card>
             <Card>
@@ -317,6 +388,11 @@ export default function Reports() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">{taskStats.completed}</div>
+                {selectedMember === 'all' && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {taskStats.childCompleted} crianças · {taskStats.adultCompleted} adultos
+                  </p>
+                )}
               </CardContent>
             </Card>
             <Card>
@@ -326,6 +402,11 @@ export default function Reports() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">{taskStats.overdue}</div>
+                {selectedMember === 'all' && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {taskStats.childOverdue} crianças · {taskStats.adultOverdue} adultos
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
