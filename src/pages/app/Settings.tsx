@@ -132,11 +132,13 @@ export default function Settings() {
                 <IntegrationsTab />
               </TabsContent>
 
-              <div className="flex justify-start max-w-2xl pt-4">
-                <Button type="submit" size="lg" className="w-full md:w-auto">
-                  Salvar Configurações
-                </Button>
-              </div>
+              {['gerais', 'estrelas', 'cardapio', 'notificacoes'].includes(activeTab) && (
+                <div className="flex justify-start max-w-2xl pt-4">
+                  <Button type="submit" size="lg" className="w-full md:w-auto">
+                    Salvar Configurações
+                  </Button>
+                </div>
+              )}
             </form>
           </Form>
 
