@@ -4,7 +4,8 @@ import { ChildTaskCard } from '@/components/tasks/ChildTaskCard'
 import { useToast } from '@/hooks/use-toast'
 import { useRealtime } from '@/hooks/use-realtime'
 import { Star } from 'lucide-react'
-import { completeChildTask, getPendingChildTasks } from '@/services/tasks'
+import { getPendingChildTasks } from '@/services/tasks'
+import { completeChildTask } from '@/services/tasksService'
 import { useSearchParams } from 'react-router-dom'
 
 export default function KioskTasks() {
