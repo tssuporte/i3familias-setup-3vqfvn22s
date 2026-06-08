@@ -57,9 +57,7 @@ export default function Settings() {
     )
   }
 
-  const isFormTab = ['gerais', 'estrelas', 'cardapio', 'notificacoes', 'integracao'].includes(
-    activeTab,
-  )
+  const isFormTab = ['gerais', 'estrelas', 'cardapio', 'notificacoes'].includes(activeTab)
 
   return (
     <div className="space-y-6">
@@ -128,9 +126,6 @@ export default function Settings() {
               <TabsContent value="notificacoes">
                 <NotificationsTab />
               </TabsContent>
-              <TabsContent value="integracao">
-                <IntegrationsTab />
-              </TabsContent>
 
               {['gerais', 'estrelas', 'cardapio', 'notificacoes'].includes(activeTab) && (
                 <div className="flex justify-start max-w-2xl pt-4">
@@ -142,6 +137,9 @@ export default function Settings() {
             </form>
           </Form>
 
+          <TabsContent value="integracao">
+            <IntegrationsTab />
+          </TabsContent>
           <TabsContent value="familia">
             <FamilyTab />
           </TabsContent>
