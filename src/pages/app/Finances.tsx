@@ -45,7 +45,7 @@ import {
 } from '@/services/finances'
 
 export default function Finances() {
-  const { currentFamily } = useFamily()
+  const { family } = useFamily()
   const { toast } = useToast()
 
   const [accounts, setAccounts] = useState<FinanceAccount[]>([])
@@ -70,13 +70,13 @@ export default function Finances() {
   const [accBalance, setAccBalance] = useState('')
 
   const loadData = async () => {
-    if (!currentFamily) return
+    if (!family) return
     try {
       setLoading(true)
       const [accs, txsData, summ] = await Promise.all([
-        getAccounts(currentFamily.id),
-        getTransactions(currentFamily.id, filterAccount),
-        getMonthlySummary(currentFamily.id),
+        getAccounts(family.id),
+        getTransactions(family.id, filterAccount),
+        getMonthlySummary(family.id),
       ])
       setAccounts(accs)
       setTransactions(txsData.items)
@@ -90,7 +90,7 @@ export default function Finances() {
 
   useEffect(() => {
     loadData()
-  }, [currentFamily, filterAccount])
+  }, [family, filterAccount])
 
   useRealtime('finance_accounts', () => {
     loadData()
@@ -100,10 +100,10 @@ export default function Finances() {
   })
 
   const handleCreateAccount = async () => {
-    if (!currentFamily || !accName) return
+    if (!family || !accName) return
     try {
       await createAccount({
-        family_id: currentFamily.id,
+        family_id: family.id,
         name: accName,
         type: accType,
         balance: parseFloat(accBalance) || 0,
@@ -119,10 +119,10 @@ export default function Finances() {
   }
 
   const handleCreateTransaction = async () => {
-    if (!currentFamily || !txAmount || !txDate || !txAccount) return
+    if (!family || !txAmount || !txDate || !txAccount) return
     try {
       await createTransaction({
-        family_id: currentFamily.id,
+        family_id: family.id,
         account_id: txAccount,
         amount: parseFloat(txAmount),
         type: txType,

@@ -53,7 +53,7 @@ export default function Notices() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNotice, setEditingNotice] = useState<FamilyNotice | null>(null)
 
-  const { currentFamily } = useFamily()
+  const { family } = useFamily()
   const { toast } = useToast()
 
   const form = useForm<NoticeFormValues>({
@@ -67,9 +67,9 @@ export default function Notices() {
   })
 
   const loadNotices = useCallback(async () => {
-    if (!currentFamily?.id) return
+    if (!family?.id) return
     try {
-      const data = await getNotices(currentFamily.id)
+      const data = await getNotices(family.id)
       setNotices(data)
     } catch (error) {
       toast({
@@ -80,7 +80,7 @@ export default function Notices() {
     } finally {
       setLoading(false)
     }
-  }, [currentFamily?.id, toast])
+  }, [family?.id, toast])
 
   useEffect(() => {
     loadNotices()
@@ -126,12 +126,12 @@ export default function Notices() {
   }
 
   const onSubmit = async (values: NoticeFormValues) => {
-    if (!currentFamily?.id) return
+    if (!family?.id) return
 
     try {
       const dataToSave = {
         ...values,
-        family_id: currentFamily.id,
+        family_id: family.id,
         expiry_date: values.expiry_date ? `${values.expiry_date} 00:00:00.000Z` : '',
       }
 
