@@ -9,8 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, Star, History, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useSearchParams } from 'react-router-dom'
 
 export default function KioskProfile() {
+  const [searchParams] = useSearchParams()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [member, setMember] = useState<any>(null)
@@ -20,7 +22,7 @@ export default function KioskProfile() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const memberId = localStorage.getItem('kiosk_selected_member')
+        const memberId = searchParams.get('memberId')
         if (!memberId) {
           throw new Error('Nenhum membro selecionado. Por favor, volte e selecione seu perfil.')
         }

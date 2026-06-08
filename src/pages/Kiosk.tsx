@@ -70,14 +70,14 @@ export default function Kiosk() {
 
   const handleChildClick = (child: any) => {
     if (!child.birth_date) {
-      navigate('/kiosk/profile')
+      navigate(`/kiosk/profile?memberId=${child.id}`)
       return
     }
     const age = differenceInYears(new Date(), new Date(child.birth_date))
     if (age >= 6 && child.pin_code) {
       setSelectedChild(child)
     } else {
-      navigate('/kiosk/profile')
+      navigate(`/kiosk/profile?memberId=${child.id}`)
     }
   }
 
@@ -102,7 +102,7 @@ export default function Kiosk() {
         onOpenChange={(open) => !open && setSelectedChild(null)}
         expectedPin={selectedChild?.pin_code || ''}
         childName={selectedChild?.name || ''}
-        onSuccess={() => navigate('/kiosk/profile')}
+        onSuccess={() => navigate(`/kiosk/profile?memberId=${selectedChild?.id}`)}
       />
 
       <Card className="bg-card rounded-xl shadow-sm p-8 mb-8">

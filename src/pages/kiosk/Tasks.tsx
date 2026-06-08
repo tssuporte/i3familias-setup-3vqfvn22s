@@ -5,15 +5,17 @@ import { useToast } from '@/hooks/use-toast'
 import { useRealtime } from '@/hooks/use-realtime'
 import { Star } from 'lucide-react'
 import { completeChildTask, getPendingChildTasks } from '@/services/tasks'
+import { useSearchParams } from 'react-router-dom'
 
 export default function KioskTasks() {
+  const [searchParams] = useSearchParams()
   const [tasks, setTasks] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [completingId, setCompletingId] = useState<string | null>(null)
   const [showReward, setShowReward] = useState(false)
   const { toast } = useToast()
 
-  const memberId = localStorage.getItem('kiosk_member_id') || ''
+  const memberId = searchParams.get('memberId') || ''
 
   const loadTasks = async () => {
     if (!memberId) {
