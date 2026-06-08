@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -20,6 +20,7 @@ import { AITab } from './settings/AITab'
 export default function Settings() {
   const { loading, settings, saveSettings } = useSettings()
   const { setTheme } = useTheme()
+  const [activeTab, setActiveTab] = useState('gerais')
 
   const form = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
@@ -56,58 +57,65 @@ export default function Settings() {
     )
   }
 
+  const isFormTab = ['gerais', 'estrelas', 'cardapio', 'notificacoes', 'integracao'].includes(
+    activeTab,
+  )
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <Tabs defaultValue="gerais" className="w-full">
-            <TabsList className="flex w-full flex-wrap justify-start h-auto bg-transparent p-0 border-b rounded-none gap-4">
-              <TabsTrigger
-                value="gerais"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Gerais
-              </TabsTrigger>
-              <TabsTrigger
-                value="estrelas"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Estrelas
-              </TabsTrigger>
-              <TabsTrigger
-                value="cardapio"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Cardápio e Despensa
-              </TabsTrigger>
-              <TabsTrigger
-                value="notificacoes"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Notificações
-              </TabsTrigger>
-              <TabsTrigger
-                value="integracao"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Integração
-              </TabsTrigger>
-              <TabsTrigger
-                value="familia"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Família
-              </TabsTrigger>
-              <TabsTrigger
-                value="ai"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
-              >
-                Inteligência Artificial
-              </TabsTrigger>
-            </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="flex w-full flex-wrap justify-start h-auto bg-transparent p-0 border-b rounded-none gap-4">
+          <TabsTrigger
+            value="gerais"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Gerais
+          </TabsTrigger>
+          <TabsTrigger
+            value="estrelas"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Estrelas
+          </TabsTrigger>
+          <TabsTrigger
+            value="cardapio"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Cardápio e Despensa
+          </TabsTrigger>
+          <TabsTrigger
+            value="notificacoes"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Notificações
+          </TabsTrigger>
+          <TabsTrigger
+            value="integracao"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Integração
+          </TabsTrigger>
+          <TabsTrigger
+            value="familia"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Família
+          </TabsTrigger>
+          <TabsTrigger
+            value="ia"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+          >
+            Inteligência Artificial
+          </TabsTrigger>
+        </TabsList>
 
-            <div className="mt-8">
+        <div className="mt-8">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className={isFormTab ? 'space-y-8' : 'hidden'}
+            >
               <TabsContent value="gerais">
                 <GeneralTab />
               </TabsContent>
@@ -123,22 +131,23 @@ export default function Settings() {
               <TabsContent value="integracao">
                 <IntegrationsTab />
               </TabsContent>
-              <TabsContent value="familia">
-                <FamilyTab />
-              </TabsContent>
-              <TabsContent value="ai">
-                <AITab />
-              </TabsContent>
-            </div>
-          </Tabs>
 
-          <div className="flex justify-start max-w-2xl pt-4">
-            <Button type="submit" size="lg" className="w-full md:w-auto">
-              Salvar Configurações
-            </Button>
-          </div>
-        </form>
-      </Form>
+              <div className="flex justify-start max-w-2xl pt-4">
+                <Button type="submit" size="lg" className="w-full md:w-auto">
+                  Salvar Configurações
+                </Button>
+              </div>
+            </form>
+          </Form>
+
+          <TabsContent value="familia">
+            <FamilyTab />
+          </TabsContent>
+          <TabsContent value="ia">
+            <AITab />
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
   )
 }
