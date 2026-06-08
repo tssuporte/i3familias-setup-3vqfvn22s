@@ -167,21 +167,26 @@ export default function Reports() {
     const completed = filteredTasks.filter((t) => t.status === 'completed').length
     const overdue = filteredTasks.filter((t) => t.status === 'overdue').length
 
-    const childTotal = filteredTasks.filter((t) => t._source === 'child').length
-    const adultTotal = filteredTasks.filter((t) => t._source === 'adult').length
+    const getMemberType = (assignedTo: string) => {
+      const member = members.find((m) => m.id === assignedTo)
+      return member?.member_type
+    }
+
+    const childTotal = filteredTasks.filter((t) => getMemberType(t.assigned_to) === 'child').length
+    const adultTotal = filteredTasks.filter((t) => getMemberType(t.assigned_to) === 'adult').length
 
     const childCompleted = filteredTasks.filter(
-      (t) => t.status === 'completed' && t._source === 'child',
+      (t) => t.status === 'completed' && getMemberType(t.assigned_to) === 'child',
     ).length
     const adultCompleted = filteredTasks.filter(
-      (t) => t.status === 'completed' && t._source === 'adult',
+      (t) => t.status === 'completed' && getMemberType(t.assigned_to) === 'adult',
     ).length
 
     const childOverdue = filteredTasks.filter(
-      (t) => t.status === 'overdue' && t._source === 'child',
+      (t) => t.status === 'overdue' && getMemberType(t.assigned_to) === 'child',
     ).length
     const adultOverdue = filteredTasks.filter(
-      (t) => t.status === 'overdue' && t._source === 'adult',
+      (t) => t.status === 'overdue' && getMemberType(t.assigned_to) === 'adult',
     ).length
 
     return {
@@ -195,7 +200,7 @@ export default function Reports() {
       childOverdue,
       adultOverdue,
     }
-  }, [filteredTasks])
+  }, [filteredTasks, members])
 
   const chartData = useMemo(() => {
     const weeks: Record<
@@ -244,15 +249,10 @@ export default function Reports() {
   const handleExportCSV = () => {
     const headers = ['Título', 'Atribuído a', 'Status', 'Data de Criação']
     const rows = filteredTasks.map((t) => {
-      let assigneeName = 'Desconhecido'
-      if (t.expand?.assigned_to?.name) {
-        assigneeName = t.expand.assigned_to.name
-      } else {
-        const member = members.find((m) => m.id === t.assigned_to)
-        if (member?.name) {
-          assigneeName = member.name
-        }
-      }
+      const assigneeName =
+        t.expand?.assigned_to?.name ||
+        members.find((m) => m.id === t.assigned_to)?.name ||
+        'Desconhecido'
 
       return [
         `"${(t.name || '').replace(/"/g, '""')}"`,
@@ -330,7 +330,7 @@ export default function Reports() {
               {members.filter((m) => m.member_type === 'child').length > 0 && (
                 <>
                   <SelectItem value="children" disabled>
-                    — Somente Crianças —
+                    ── Crianças ──
                   </SelectItem>
                   {members
                     .filter((m) => m.member_type === 'child')
@@ -344,7 +344,7 @@ export default function Reports() {
               {members.filter((m) => m.member_type === 'adult').length > 0 && (
                 <>
                   <SelectItem value="adults" disabled>
-                    — Somente Adultos —
+                    ── Adultos ──
                   </SelectItem>
                   {members
                     .filter((m) => m.member_type === 'adult')
