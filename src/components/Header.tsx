@@ -26,7 +26,9 @@ export function Header({ showSidebarTrigger = true }: { showSidebarTrigger?: boo
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <span className="text-lg font-bold text-primary-foreground">F</span>
           </div>
-          <span className="hidden text-xl font-semibold sm:inline-block">Family Hub</span>
+          <span className="hidden text-xl font-semibold sm:inline-block">
+            Gestão de Familias Grandes
+          </span>
         </Link>
       </div>
 
