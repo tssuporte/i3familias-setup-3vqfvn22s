@@ -27,35 +27,35 @@ export default function Dashboard() {
       const todayStr = format(new Date(), 'yyyy-MM-dd')
 
       const [tasksRes, shoppingRes, noticesRes, agendaRes, activityRes] = await Promise.all([
-        pb.collection('tasks_children').getList(1, 1, {
+        pb.collection('tasks_children').getFullList({
           filter: `family_id = "${family.id}" && status = "pending"`,
           $autoCancel: false,
         }),
-        pb.collection('shopping_items').getList(1, 1, {
+        pb.collection('shopping_items').getFullList({
           filter: `family_id = "${family.id}" && is_purchased = false`,
           $autoCancel: false,
         }),
-        pb.collection('family_notices').getList(1, 1, {
+        pb.collection('family_notices').getFullList({
           filter: `family_id = "${family.id}" && status = "active"`,
           $autoCancel: false,
         }),
-        pb.collection('calendar_events').getList(1, 3, {
+        pb.collection('calendar_events').getFullList({
           filter: `family_id = "${family.id}" && date >= "${todayStr} 00:00:00"`,
           sort: 'date',
           $autoCancel: false,
         }),
-        pb.collection('tasks_children').getList(1, 3, {
+        pb.collection('tasks_children').getFullList({
           filter: `family_id = "${family.id}" && status = "completed"`,
-          sort: '-completed_at,-updated',
+          sort: '-completed_at',
           $autoCancel: false,
         }),
       ])
 
-      setPendingTasksCount(tasksRes.totalItems)
-      setShoppingCount(shoppingRes.totalItems)
-      setNoticesCount(noticesRes.totalItems)
-      setAgenda(agendaRes.items)
-      setRecentActivity(activityRes.items)
+      setPendingTasksCount(tasksRes.length)
+      setShoppingCount(shoppingRes.length)
+      setNoticesCount(noticesRes.length)
+      setAgenda(agendaRes.slice(0, 3))
+      setRecentActivity(activityRes.slice(0, 3))
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
     } finally {
