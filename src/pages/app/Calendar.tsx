@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
-import pb from '@/lib/pocketbase/client'
 import { useCalendar } from '@/hooks/use-calendar'
+import { useFamily } from '@/contexts/FamilyContext'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MonthView } from '@/components/calendar/MonthView'
@@ -13,19 +13,14 @@ import { EventDialog } from '@/components/calendar/EventDialog'
 import { EventList } from '@/components/calendar/EventList'
 
 export default function Calendar() {
-  const [familyId, setFamilyId] = useState<string>('')
+  const { family } = useFamily()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<any>(null)
 
-  useEffect(() => {
-    pb.collection('families')
-      .getFirstListItem(`user_id="${pb.authStore.record?.id}"`)
-      .then((f) => setFamilyId(f.id))
-      .catch(console.error)
-  }, [])
-
-  const { currentDate, setCurrentDate, view, setView, events, loading } = useCalendar(familyId)
+  const { currentDate, setCurrentDate, view, setView, events, loading } = useCalendar(
+    family?.id ?? '',
+  )
 
   const handlePrevious = () => {
     if (view === 'month') setCurrentDate(subMonths(currentDate, 1))
@@ -152,13 +147,13 @@ export default function Calendar() {
         </div>
       </div>
 
-      {familyId && (
+      {family?.id && (
         <EventDialog
           isOpen={isDialogOpen}
           setIsOpen={setIsDialogOpen}
           event={editingEvent}
           defaultDate={selectedDate}
-          familyId={familyId}
+          familyId={family.id}
         />
       )}
 
