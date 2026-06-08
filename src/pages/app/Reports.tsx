@@ -95,30 +95,22 @@ export default function Reports() {
         const [membersData, childTasks, adultTasks, starsData, redemptionsData, pantryData] =
           await Promise.all([
             pb.collection('family_members').getFullList({ filter: `family_id="${family.id}"` }),
-            pb
-              .collection('tasks_children')
-              .getFullList({
-                filter: `family_id="${family.id}" && ${dateFilter}`,
-                expand: 'assigned_to',
-              }),
-            pb
-              .collection('tasks_adults')
-              .getFullList({
-                filter: `family_id="${family.id}" && ${dateFilter}`,
-                expand: 'assigned_to',
-              }),
-            pb
-              .collection('stars_transactions')
-              .getFullList({
-                filter: `family_id="${family.id}" && transaction_type="earned" && ${dateFilter}`,
-                expand: 'member_id',
-              }),
-            pb
-              .collection('rewards_redemptions')
-              .getFullList({
-                filter: `family_id="${family.id}" && status="approved" && ${approvedFilter}`,
-                expand: 'member_id,reward_id',
-              }),
+            pb.collection('tasks_children').getFullList({
+              filter: `family_id="${family.id}" && ${dateFilter}`,
+              expand: 'assigned_to',
+            }),
+            pb.collection('tasks_adults').getFullList({
+              filter: `family_id="${family.id}" && ${dateFilter}`,
+              expand: 'assigned_to',
+            }),
+            pb.collection('stars_transactions').getFullList({
+              filter: `family_id="${family.id}" && transaction_type="earned" && ${dateFilter}`,
+              expand: 'member_id',
+            }),
+            pb.collection('rewards_redemptions').getFullList({
+              filter: `family_id="${family.id}" && status="approved" && ${approvedFilter}`,
+              expand: 'member_id,reward_id',
+            }),
             pb.collection('pantry').getFullList({ filter: `family_id="${family.id}"` }),
           ])
 

@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/hooks/use-auth'
 import { useFamily } from '@/contexts/FamilyContext'
-import { CheckCircle2, ShoppingBasket, BellRing, Calendar as CalendarIcon } from 'lucide-react'
+import {
+  CheckCircle2,
+  ShoppingBasket,
+  BellRing,
+  Calendar as CalendarIcon,
+  ArrowRight,
+} from 'lucide-react'
 import pb from '@/lib/pocketbase/client'
 import { useRealtime } from '@/hooks/use-realtime'
 import { format, formatDistanceToNow, parseISO } from 'date-fns'
@@ -19,6 +27,7 @@ export default function Dashboard() {
   const [noticesCount, setNoticesCount] = useState(0)
   const [agenda, setAgenda] = useState<any[]>([])
   const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [children, setChildren] = useState<any[]>([])
 
   const loadData = async () => {
     if (!family?.id) return
@@ -26,36 +35,43 @@ export default function Dashboard() {
     try {
       const todayStr = format(new Date(), 'yyyy-MM-dd')
 
-      const [tasksRes, shoppingRes, noticesRes, agendaRes, activityRes] = await Promise.all([
-        pb.collection('tasks_children').getFullList({
-          filter: `family_id = "${family.id}" && status = "pending"`,
-          $autoCancel: false,
-        }),
-        pb.collection('shopping_items').getFullList({
-          filter: `family_id = "${family.id}" && is_purchased = false`,
-          $autoCancel: false,
-        }),
-        pb.collection('family_notices').getFullList({
-          filter: `family_id = "${family.id}" && status = "active"`,
-          $autoCancel: false,
-        }),
-        pb.collection('calendar_events').getFullList({
-          filter: `family_id = "${family.id}" && date >= "${todayStr} 00:00:00"`,
-          sort: 'date',
-          $autoCancel: false,
-        }),
-        pb.collection('tasks_children').getFullList({
-          filter: `family_id = "${family.id}" && status = "completed"`,
-          sort: '-completed_at',
-          $autoCancel: false,
-        }),
-      ])
+      const [tasksRes, shoppingRes, noticesRes, agendaRes, activityRes, childrenRes] =
+        await Promise.all([
+          pb.collection('tasks_children').getFullList({
+            filter: `family_id = "${family.id}" && status = "pending"`,
+            $autoCancel: false,
+          }),
+          pb.collection('shopping_items').getFullList({
+            filter: `family_id = "${family.id}" && is_purchased = false`,
+            $autoCancel: false,
+          }),
+          pb.collection('family_notices').getFullList({
+            filter: `family_id = "${family.id}" && status = "active"`,
+            $autoCancel: false,
+          }),
+          pb.collection('calendar_events').getFullList({
+            filter: `family_id = "${family.id}" && date >= "${todayStr} 00:00:00"`,
+            sort: 'date',
+            $autoCancel: false,
+          }),
+          pb.collection('tasks_children').getFullList({
+            filter: `family_id = "${family.id}" && status = "completed"`,
+            sort: '-completed_at',
+            $autoCancel: false,
+          }),
+          pb.collection('family_members').getFullList({
+            filter: `family_id = "${family.id}" && member_type = "child"`,
+            sort: 'name',
+            $autoCancel: false,
+          }),
+        ])
 
       setPendingTasksCount(tasksRes.length)
       setShoppingCount(shoppingRes.length)
       setNoticesCount(noticesRes.length)
       setAgenda(agendaRes.slice(0, 3))
       setRecentActivity(activityRes.slice(0, 3))
+      setChildren(childrenRes)
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
     } finally {
@@ -98,9 +114,34 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Olá, {user?.name || 'Família'}!</h1>
-        <p className="text-muted-foreground">Aqui está o resumo do seu dia.</p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Olá, {user?.name || 'Família'}!</h1>
+          <p className="text-muted-foreground">Aqui está o resumo do seu dia.</p>
+        </div>
+
+        {children.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            {children.map((child) => (
+              <Link
+                key={child.id}
+                to={`/app/child/${child.id}`}
+                className="flex items-center gap-2 bg-card border rounded-full pl-1 pr-3 py-1 hover:bg-secondary hover:border-primary/30 transition-all group"
+              >
+                <Avatar className="h-7 w-7 border bg-muted">
+                  <AvatarImage src={child.photo_url} />
+                  <AvatarFallback className="text-[10px] font-bold">
+                    {child.name.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium whitespace-nowrap group-hover:text-primary transition-colors">
+                  {child.name}
+                </span>
+                <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:text-primary -ml-1 transition-all" />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

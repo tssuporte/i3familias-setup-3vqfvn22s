@@ -1,14 +1,16 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
-import { Star, CheckCircle, TrendingUp, Gift, Clock, Trophy } from 'lucide-react'
+import { Star, CheckCircle, TrendingUp, Gift, Clock, Trophy, ArrowRight } from 'lucide-react'
 import { useDashboard, DateRange } from '@/hooks/use-dashboard'
 
 const DashboardCharts = lazy(() => import('@/components/dashboard/DashboardCharts'))
 
 export default function AdultDashboard() {
+  const navigate = useNavigate()
   const [dateRange, setDateRange] = useState<DateRange>('week')
   const { toast } = useToast()
 
@@ -229,23 +231,38 @@ export default function AdultDashboard() {
                 <div className="flex flex-col">
                   {mostActiveChildren
                     .filter((c: any) => c.stars > 0)
-                    .map((child: any, index: number) => (
-                      <div
-                        key={child.name}
-                        className="flex items-center justify-between py-3 border-b last:border-0 hover:bg-secondary transition-colors duration-150 rounded-md px-2 -mx-2 gap-4"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
-                            {index + 1}
+                    .map((child: any, index: number) => {
+                      const targetId = child.id || child.member_id
+                      return (
+                        <div
+                          key={targetId || child.name}
+                          onClick={() => targetId && navigate(`/app/child/${targetId}`)}
+                          className={`flex items-center justify-between py-3 border-b last:border-0 hover:bg-secondary transition-colors duration-150 rounded-md px-2 -mx-2 gap-4 ${targetId ? 'cursor-pointer group' : ''}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm ${targetId ? 'group-hover:bg-primary group-hover:text-primary-foreground transition-colors' : ''}`}
+                            >
+                              {index + 1}
+                            </div>
+                            <p
+                              className={`text-sm font-bold ${targetId ? 'group-hover:text-primary transition-colors' : ''}`}
+                            >
+                              {child.name}
+                            </p>
                           </div>
-                          <p className="text-sm font-bold">{child.name}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 px-3 py-1 rounded-md">
+                              <Star className="h-3 w-3 fill-current" />
+                              <span className="text-sm font-bold">{child.stars}</span>
+                            </div>
+                            {targetId && (
+                              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100 -ml-2" />
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 px-3 py-1 rounded-md">
-                          <Star className="h-3 w-3 fill-current" />
-                          <span className="text-sm font-bold">{child.stars}</span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                 </div>
               )}
             </Card>
