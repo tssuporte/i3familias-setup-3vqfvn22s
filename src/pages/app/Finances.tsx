@@ -32,6 +32,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { cn } from '@/lib/utils'
 import { useRealtime } from '@/hooks/use-realtime'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -142,6 +143,8 @@ export default function Finances() {
 
   const formatCurrency = (val: number, currency = 'BRL') =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(val)
+
+  const totalBalance = accounts.reduce((acc, curr) => acc + (curr.balance || 0), 0)
 
   return (
     <div className="space-y-8 pb-10 max-w-6xl mx-auto">
@@ -270,7 +273,27 @@ export default function Finances() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Saldo Total</CardTitle>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <Skeleton className="h-8 w-24" />
+            ) : (
+              <div
+                className={cn(
+                  'text-2xl font-bold',
+                  totalBalance >= 0 ? 'text-emerald-500' : 'text-rose-500',
+                )}
+              >
+                {formatCurrency(totalBalance)}
+              </div>
+            )}
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Entradas do Mês</CardTitle>
