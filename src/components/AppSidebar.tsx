@@ -13,6 +13,8 @@ import {
   Settings,
   Star,
   Bot,
+  Megaphone,
+  FileText,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -37,9 +39,9 @@ const items = [
   { title: 'Estudos', url: '/app/studies', icon: BookOpen },
   { title: 'Finanças', url: '/app/finances', icon: DollarSign },
   { title: 'Recompensas', url: '/app/rewards', icon: Star },
-  { title: 'Avisos', url: '/app/notices', icon: Bell },
+  { title: 'Avisos', url: '/app/notices', icon: Megaphone },
   { title: 'Notificações', url: '/app/notifications', icon: Bell },
-  { title: 'Relatórios', url: '/app/reports', icon: BarChart3 },
+  { title: 'Relatórios', url: '/app/reports', icon: FileText },
   { title: 'Configurações', url: '/app/settings', icon: Settings },
 ]
 
