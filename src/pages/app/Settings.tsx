@@ -14,6 +14,8 @@ import { StarsTab } from './settings/StarsTab'
 import { MealPantryTab } from './settings/MealPantryTab'
 import { NotificationsTab } from './settings/NotificationsTab'
 import { IntegrationsTab } from './settings/IntegrationsTab'
+import { FamilyTab } from './settings/FamilyTab'
+import { AITab } from './settings/AITab'
 
 export default function Settings() {
   const { loading, settings, saveSettings } = useSettings()
@@ -91,6 +93,18 @@ export default function Settings() {
               >
                 Integração
               </TabsTrigger>
+              <TabsTrigger
+                value="familia"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+              >
+                Família
+              </TabsTrigger>
+              <TabsTrigger
+                value="ai"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-2"
+              >
+                Inteligência Artificial
+              </TabsTrigger>
             </TabsList>
 
             <div className="mt-8">
@@ -108,6 +122,12 @@ export default function Settings() {
               </TabsContent>
               <TabsContent value="integracao">
                 <IntegrationsTab />
+              </TabsContent>
+              <TabsContent value="familia">
+                <FamilyTab />
+              </TabsContent>
+              <TabsContent value="ai">
+                <AITab />
               </TabsContent>
             </div>
           </Tabs>
