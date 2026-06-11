@@ -7,15 +7,12 @@ export async function sendSchoolHelperMessage(
   signal: AbortSignal,
   onChunk?: (delta: string, full: string) => void,
 ) {
-  const res = await fetch(
-    `${import.meta.env.VITE_POCKETBASE_URL}/backend/v1/ai/agents/school-helper/chat`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: pb.authStore.token },
-      body: JSON.stringify({ message, conversation_id: conversationId }),
-      signal,
-    },
-  )
+  const res = await fetch(`${import.meta.env.VITE_POCKETBASE_URL}/backend/v1/school-helper/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: pb.authStore.token },
+    body: JSON.stringify({ message, conversation_id: conversationId }),
+    signal,
+  })
 
   const result = await streamAgentChat(res, {
     onChunk: (delta, full) => onChunk?.(delta, full),

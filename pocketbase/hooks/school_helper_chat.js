@@ -8,18 +8,24 @@ routerAdd(
       if (!userId) return e.unauthorizedError('auth required')
       if (!body.message?.trim()) return e.badRequestError('message is required')
 
-      const result = $ai.agent('school-helper').chat({
+      const conv = $ai.agent('school-helper').getOrCreateConversation({
         user_id: userId,
-        conversation_id: body.conversation_id || null,
-        message: body.message,
+        id: body.conversation_id || null,
       })
 
-      return e.json(200, {
-        conversation_id: result.conversation_id,
-        content: result.content,
-        citations: result.citations,
-        message_id: result.message_id,
+      const iter = $ai.agent('school-helper').chat({
+        user_id: userId,
+        conversation_id: conv.id,
+        message: body.message,
+        stream: true,
       })
+
+      e.response.header().set('Content-Type', 'text/event-stream')
+      e.response.header().set('Cache-Control', 'no-cache')
+      e.response.header().set('X-Conversation-Id', conv.id)
+
+      $response.stream(e, iter)
+      return
     } catch (err) {
       if (err instanceof SkipAiConfigError)
         return e.json(503, { error: 'AI temporarily unavailable' })

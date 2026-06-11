@@ -113,8 +113,8 @@ export function useAIAssistant() {
 
         toast({
           variant: 'destructive',
-          title: 'Erro',
-          description: 'Não foi possível conectar ao assistente.',
+          title: 'Erro na conexão com o assistente',
+          description: err?.message || 'Não foi possível conectar ao assistente.',
           action: React.createElement(
             ToastAction,
             { altText: 'Tentar Novamente', onClick: () => void sendMessage(content, currentMode) },

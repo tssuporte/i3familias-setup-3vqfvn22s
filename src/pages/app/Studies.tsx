@@ -78,25 +78,34 @@ export default function Studies() {
                   </p>
                 </div>
               ) : (
-                messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={cn(
-                      'flex w-max max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-3 text-sm',
-                      m.role === 'user'
-                        ? 'self-end bg-blue-600 text-primary-foreground rounded-tr-sm'
-                        : 'self-start bg-white dark:bg-slate-800 text-foreground border border-blue-100 dark:border-blue-900/30 shadow-sm rounded-tl-sm',
-                    )}
-                  >
-                    <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
-                  </div>
-                ))
-              )}
-              {loading && (
-                <div className="flex w-max max-w-[85%] items-center gap-2 self-start rounded-2xl bg-white dark:bg-slate-800 border border-blue-100 dark:border-blue-900/30 px-4 py-3 text-sm shadow-sm rounded-tl-sm text-muted-foreground">
-                  <PenTool className="h-4 w-4 animate-bounce text-blue-500" />
-                  <span>Pensando...</span>
-                </div>
+                messages.map((m) => {
+                  const isAssistantEmpty = m.role === 'assistant' && !m.content
+                  if (isAssistantEmpty && loading) {
+                    return (
+                      <div
+                        key={m.id}
+                        className="flex w-max max-w-[85%] items-center gap-2 self-start rounded-2xl bg-white dark:bg-slate-800 border border-blue-100 dark:border-blue-900/30 px-4 py-3 text-sm shadow-sm rounded-tl-sm text-muted-foreground animate-fade-in-up"
+                      >
+                        <PenTool className="h-4 w-4 animate-bounce text-blue-500" />
+                        <span>Pensando...</span>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div
+                      key={m.id}
+                      className={cn(
+                        'flex w-max max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-3 text-sm animate-fade-in-up',
+                        m.role === 'user'
+                          ? 'self-end bg-blue-600 text-primary-foreground rounded-tr-sm'
+                          : 'self-start bg-white dark:bg-slate-800 text-foreground border border-blue-100 dark:border-blue-900/30 shadow-sm rounded-tl-sm',
+                      )}
+                    >
+                      <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
+                    </div>
+                  )
+                })
               )}
             </div>
           </ScrollArea>

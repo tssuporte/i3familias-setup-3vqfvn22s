@@ -107,8 +107,8 @@ export function useSchoolHelper() {
 
         toast({
           variant: 'destructive',
-          title: 'Erro',
-          description: 'Não foi possível conectar ao tutor.',
+          title: 'Erro de conexão',
+          description: err?.message || 'Não foi possível conectar ao tutor.',
           action: React.createElement(
             ToastAction,
             { altText: 'Tentar Novamente', onClick: () => void sendMessage(content) },
