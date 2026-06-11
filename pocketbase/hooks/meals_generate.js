@@ -22,12 +22,29 @@ routerAdd(
       50,
       0,
     )
-    const inventory = pantryItems
-      .map((p) => `${p.getString('name')} (${p.getInt('quantity')} ${p.getString('unit')})`)
+
+    const inventoryList = pantryItems
+      .map((p) => {
+        const name = p.getString('name')
+        const qty = p.getInt('quantity')
+        const unit = p.getString('unit')
+        const expiry = p.getString('expiry_date')
+        let itemStr = `${name} (${qty} ${unit})`
+        if (expiry) {
+          itemStr += ` [Vence em: ${expiry.split(' ')[0]}]`
+        }
+        return itemStr
+      })
       .join(', ')
 
-    const prompt = `Por favor, gere o cardápio de 7 dias consecutivos, a partir do dia ${startDate}. Siga RIGOROSAMENTE o formato JSON array solicitado no prompt do sistema.
-A família possui os seguintes itens na despensa que devem ser priorizados (especialmente os próximos ao vencimento): ${inventory || 'nenhum item específico'}.`
+    const inventoryContext = inventoryList
+      ? `A família possui os seguintes itens na despensa que devem ser fortemente priorizados, especialmente aqueles próximos da data de vencimento: ${inventoryList}.`
+      : `A despensa está vazia no momento. Por favor, baseie as refeições em ingredientes básicos da culinária brasileira, como arroz, feijão, ovos, macarrão, frango, carne moída, legumes e verduras comuns.`
+
+    const prompt = `Por favor, gere o cardápio de 7 dias consecutivos, começando rigorosamente no dia ${startDate}.
+${inventoryContext}
+Siga TODAS as restrições e regras do seu papel.
+A resposta deve ser APENAS o array JSON puro e válido, sem nenhum texto introdutório e SEM blocos de código Markdown (não use \`\`\`json).`
 
     const result = $ai.agent('meal-planner').chat({
       user_id: userId,

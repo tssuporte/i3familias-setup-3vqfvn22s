@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Navigate } from 'react-router-dom'
 import pb from '@/lib/pocketbase/client'
 import { ChildInterfaceWrapper } from '@/components/child-interfaces/ChildInterfaceWrapper'
+import { useAuth } from '@/hooks/use-auth'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
 export default function ChildView() {
   const { memberId } = useParams<{ memberId: string }>()
+  const { isMemberAccount, memberAccountRole, memberAccountMemberId } = useAuth()
   const [member, setMember] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -33,6 +35,15 @@ export default function ChildView() {
 
     fetchMember()
   }, [memberId])
+
+  if (
+    isMemberAccount &&
+    memberAccountRole === 'child' &&
+    memberAccountMemberId &&
+    memberId !== memberAccountMemberId
+  ) {
+    return <Navigate to={`/app/child/${memberAccountMemberId}`} replace />
+  }
 
   if (loading) {
     return (

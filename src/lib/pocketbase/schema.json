@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-11T17:40:16.060Z",
+  "generatedAt": "2026-06-11T18:25:43.336Z",
   "collections": [
     {
       "name": "users",
@@ -1591,6 +1591,239 @@
       "indexes": [
         "CREATE UNIQUE INDEX `idx_tokenKey_pbc_4242334577` ON `member_accounts` (`tokenKey`)",
         "CREATE UNIQUE INDEX `idx_email_pbc_4242334577` ON `member_accounts` (`email`) WHERE `email` != ''"
+      ]
+    },
+    {
+      "name": "study_plans",
+      "type": "base",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "year",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "grade_label",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "bncc_topics",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "custom_topics",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "parent_notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_study_plans_member_year ON study_plans (member_id, year)"
+      ]
+    },
+    {
+      "name": "study_sessions",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "study_plan_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "study_plans"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "topic_id",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "topic_label",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "duration_minutes",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "tutor_evaluation",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["in_progress", "completed", "needs_review"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "topic_progress",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "study_plan_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "study_plans"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "topic_id",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "topic_label",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "mastery_level",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "sessions_count",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "last_session_at",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "parent_override_note",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_topic_progress_plan_topic ON topic_progress (study_plan_id, topic_id)"
       ]
     }
   ]

@@ -7,6 +7,9 @@ interface AuthContextType {
   isAuthenticated: boolean
   role: 'admin' | 'adult' | 'child' | null
   familyId: string | null
+  isMemberAccount: boolean
+  memberAccountRole: 'child' | 'adult' | 'admin' | null
+  memberAccountMemberId: string | null
   signUp: (email: string, password: string, name: string) => Promise<{ error: any }>
   signIn: (identifier: string, password: string) => Promise<{ error: any }>
   signOut: () => void
@@ -26,6 +29,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [member, setMember] = useState<any>(null)
   const [role, setRole] = useState<'admin' | 'adult' | 'child' | null>(null)
   const [familyId, setFamilyId] = useState<string | null>(null)
+  const [isMemberAccount, setIsMemberAccount] = useState<boolean>(
+    pb.authStore.isValid && pb.authStore.record?.collectionName === 'member_accounts',
+  )
+  const [memberAccountRole, setMemberAccountRole] = useState<'child' | 'adult' | 'admin' | null>(
+    pb.authStore.isValid && pb.authStore.record?.collectionName === 'member_accounts'
+      ? pb.authStore.record?.role
+      : null,
+  )
+  const [memberAccountMemberId, setMemberAccountMemberId] = useState<string | null>(
+    pb.authStore.isValid && pb.authStore.record?.collectionName === 'member_accounts'
+      ? pb.authStore.record?.member_id
+      : null,
+  )
   const [isAuthenticated, setIsAuthenticated] = useState(pb.authStore.isValid)
   const [loading, setLoading] = useState(true)
 
@@ -35,6 +51,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setMember(null)
       setRole(null)
       setFamilyId(null)
+      setIsMemberAccount(false)
+      setMemberAccountRole(null)
+      setMemberAccountMemberId(null)
       setIsAuthenticated(false)
       setLoading(false)
       return
@@ -46,6 +65,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (record.collectionName === 'users') {
         setRole('admin')
+        setIsMemberAccount(false)
+        setMemberAccountRole(null)
+        setMemberAccountMemberId(null)
         try {
           const family = await pb.collection('families').getFirstListItem(`user_id="${record.id}"`)
           setFamilyId(family.id)
@@ -56,6 +78,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else if (record.collectionName === 'member_accounts') {
         setRole(record.role)
         setFamilyId(record.family_id)
+        setIsMemberAccount(true)
+        setMemberAccountRole(record.role)
+        setMemberAccountMemberId(record.member_id)
         try {
           const memberRecord = await pb.collection('family_members').getOne(record.member_id)
           setMember(memberRecord)
@@ -127,7 +152,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, member, isAuthenticated, role, familyId, signUp, signIn, signOut, loading }}
+      value={{
+        user,
+        member,
+        isAuthenticated,
+        role,
+        familyId,
+        isMemberAccount,
+        memberAccountRole,
+        memberAccountMemberId,
+        signUp,
+        signIn,
+        signOut,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

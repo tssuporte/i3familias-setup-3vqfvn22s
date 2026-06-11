@@ -16,7 +16,7 @@ interface StoredHistory {
   messages: ChatMessage[]
 }
 
-export function useSchoolHelper() {
+export function useSchoolHelper(onEvaluation?: (evalData: any) => void) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
@@ -87,11 +87,13 @@ export function useSchoolHelper() {
       ])
 
       try {
+        let finalContent = ''
         const result = await sendSchoolHelperMessage(
           content,
           conversationId,
           abortControllerRef.current.signal,
           (_, full) => {
+            finalContent = full
             setMessages((prev) =>
               prev.map((m) => (m.id === assistantMsgId ? { ...m, content: full } : m)),
             )
@@ -99,6 +101,17 @@ export function useSchoolHelper() {
         )
 
         setConversationId(result.conversationId)
+
+        const match = finalContent.match(/\[AVALIACAO\]([\s\S]*?)\[\/AVALIACAO\]/)
+        if (match && onEvaluation) {
+          try {
+            const ev = JSON.parse(match[1])
+            onEvaluation(ev)
+          } catch (e) {
+            console.error('Failed to parse evaluation JSON', e)
+          }
+        }
+
         return true
       } catch (err: any) {
         if (err.name === 'AbortError') return false

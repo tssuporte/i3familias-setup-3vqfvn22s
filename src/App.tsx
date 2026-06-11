@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { MainLayout } from '@/components/layouts/MainLayout'
 import { KioskLayout } from '@/components/layouts/KioskLayout'
 import { ProtectedRoute } from '@/components/layouts/ProtectedRoute'
+import { MemberRoute } from '@/components/layouts/MemberRoute'
 import { FamilyProvider, FamilyRequire } from '@/contexts/FamilyContext'
 import { NotificationProvider } from '@/hooks/use-notifications'
 import NotFound from './pages/NotFound'
@@ -66,7 +67,7 @@ const App = () => (
                     <ProtectedRoute>
                       <FamilyProvider>
                         <NotificationProvider>
-                          <Outlet />
+                          <MemberRoute />
                         </NotificationProvider>
                       </FamilyProvider>
                     </ProtectedRoute>

@@ -15,6 +15,7 @@ import {
   Bot,
   Megaphone,
   FileText,
+  User,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -26,8 +27,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useAuth } from '@/hooks/use-auth'
 
-const items = [
+const allItems = [
   { title: 'Dashboard', url: '/app', icon: Home },
   { title: 'Painel do Adulto', url: '/dashboard', icon: BarChart3 },
   { title: 'Assistente Familiar', url: '/app/assistant', icon: Bot },
@@ -46,6 +48,23 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const { isMemberAccount, memberAccountRole, memberAccountMemberId } = useAuth()
+
+  let displayedItems = allItems
+
+  if (isMemberAccount && memberAccountRole === 'child') {
+    const allowedUrls = ['/app', '/app/tasks', '/app/studies', '/app/rewards']
+    displayedItems = allItems.filter((item) => allowedUrls.includes(item.url))
+
+    if (memberAccountMemberId) {
+      displayedItems.push({
+        title: 'Meu Perfil',
+        url: `/app/child/${memberAccountMemberId}`,
+        icon: User,
+      })
+    }
+  }
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -53,7 +72,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {displayedItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
