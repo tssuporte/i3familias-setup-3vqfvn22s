@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useRealtime } from '@/hooks/use-realtime'
 
 export function useShoppingList() {
-  const { currentFamily } = useFamily()
+  const { family: currentFamily } = useFamily()
   const { toast } = useToast()
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [loading, setLoading] = useState(true)

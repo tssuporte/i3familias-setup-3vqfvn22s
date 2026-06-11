@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import {
+  getFamily,
   getFamilyByUserId,
   getFamilyMembers,
   addFamilyMember as addMemberService,
@@ -26,7 +27,7 @@ export const useFamily = () => {
 }
 
 export const FamilyProvider = ({ children }: { children: ReactNode }) => {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, familyId } = useAuth()
   const [family, setFamily] = useState<any>(null)
   const [members, setMembers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,7 +36,13 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return
     try {
       setLoading(true)
-      const fam = await getFamilyByUserId(user.id)
+      let fam = null
+      if (familyId) {
+        fam = await getFamily(familyId)
+      } else if (user.collectionName === 'users') {
+        fam = await getFamilyByUserId(user.id)
+      }
+
       if (fam) {
         setFamily(fam)
         const mems = await getFamilyMembers(fam.id)
@@ -59,7 +66,7 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
       return
     }
     fetchFamily()
-  }, [user, isAuthenticated])
+  }, [user, isAuthenticated, familyId])
 
   const addMember = async (data: any) => {
     if (!family) throw new Error('Nenhuma família encontrada')

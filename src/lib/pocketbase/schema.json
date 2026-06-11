@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-08T12:08:12.043Z",
+  "generatedAt": "2026-06-10T23:59:34.454Z",
   "collections": [
     {
       "name": "users",
@@ -48,8 +48,8 @@
       "name": "families",
       "type": "base",
       "apiRules": {
-        "list": "user_id = @request.auth.id",
-        "view": "user_id = @request.auth.id",
+        "list": "user_id = @request.auth.id || id = @request.auth.family_id",
+        "view": "user_id = @request.auth.id || id = @request.auth.family_id",
         "create": "user_id = @request.auth.id",
         "update": "user_id = @request.auth.id",
         "delete": "user_id = @request.auth.id"
@@ -107,11 +107,11 @@
       "name": "family_members",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -192,11 +192,11 @@
       "name": "family_notices",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -255,11 +255,11 @@
       "name": "tasks_children",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -365,11 +365,11 @@
       "name": "tasks_adults",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -586,11 +586,11 @@
       "name": "stars_levels",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -646,11 +646,11 @@
       "name": "stars_transactions",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -714,11 +714,11 @@
       "name": "rewards",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -779,11 +779,11 @@
       "name": "rewards_redemptions",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -854,11 +854,11 @@
       "name": "pantry",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -934,11 +934,11 @@
       "name": "meals",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -1022,11 +1022,11 @@
       "name": "shopping_items",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -1100,11 +1100,11 @@
       "name": "calendar_events",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -1415,11 +1415,11 @@
       "name": "finance_accounts",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -1475,11 +1475,11 @@
       "name": "finance_transactions",
       "type": "base",
       "apiRules": {
-        "list": "family_id.user_id = @request.auth.id",
-        "view": "family_id.user_id = @request.auth.id",
-        "create": "family_id.user_id = @request.auth.id",
-        "update": "family_id.user_id = @request.auth.id",
-        "delete": "family_id.user_id = @request.auth.id"
+        "list": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "view": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "create": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "update": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)",
+        "delete": "family_id.user_id = @request.auth.id || (@request.auth.collectionName = 'member_accounts' && family_id = @request.auth.family_id)"
       },
       "fields": [
         {
@@ -1553,6 +1553,44 @@
         "CREATE INDEX idx_finance_txs_family ON finance_transactions (family_id)",
         "CREATE INDEX idx_finance_txs_account ON finance_transactions (account_id)",
         "CREATE INDEX idx_finance_txs_date ON finance_transactions (date)"
+      ]
+    },
+    {
+      "name": "member_accounts",
+      "type": "auth",
+      "apiRules": {
+        "list": "family_id.user_id = @request.auth.id",
+        "view": "family_id.user_id = @request.auth.id || id = @request.auth.id",
+        "create": "family_id.user_id = @request.auth.id",
+        "update": "family_id.user_id = @request.auth.id || id = @request.auth.id",
+        "delete": "family_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "family_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "families"
+        },
+        {
+          "name": "member_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "family_members"
+        },
+        {
+          "name": "role",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["child", "adult", "admin"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX `idx_tokenKey_pbc_4242334577` ON `member_accounts` (`tokenKey`)",
+        "CREATE UNIQUE INDEX `idx_email_pbc_4242334577` ON `member_accounts` (`email`) WHERE `email` != ''"
       ]
     }
   ]
