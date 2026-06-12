@@ -27,56 +27,111 @@ function genTopics(
   })
 }
 
-export const BNCC_TOPICS_BY_AGE = {
-  '6-7': {
-    label: '1º e 2º ano — Ensino Fundamental',
+export const BNCC_BY_YEAR: Record<string, { label: string; topics: BnccTopic[] }> = {
+  pre: {
+    label: 'Pré-escola',
     topics: [
-      ...genTopics('lp1', 22, 'Linguagens', 'Língua Portuguesa', 'Leitura e Escrita'),
-      ...genTopics('mt1', 20, 'Matemática', 'Matemática', 'Números e Operações'),
-      ...genTopics('ci1', 10, 'Ciências da Natureza', 'Ciências', 'Vida e Evolução'),
-      ...genTopics('hi1', 4, 'Ciências Humanas', 'História', 'Mundo Pessoal e Social'),
-      ...genTopics('ge1', 4, 'Ciências Humanas', 'Geografia', 'O Sujeito e seu Lugar no Mundo'),
+      ...genTopics('pre-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Oralidade e Escrita'),
+      ...genTopics('pre-mt', 5, 'Matemática', 'Matemática', 'Noções de Quantidade'),
     ],
   },
-  '8-9': {
-    label: '3º e 4º ano — Ensino Fundamental',
+  ef1: {
+    label: '1º ano — Ensino Fundamental',
     topics: [
-      ...genTopics('lp3', 22, 'Linguagens', 'Língua Portuguesa', 'Práticas de Linguagem'),
-      ...genTopics('mt3', 22, 'Matemática', 'Matemática', 'Geometria e Grandezas'),
-      ...genTopics('ci3', 12, 'Ciências da Natureza', 'Ciências', 'Terra e Universo'),
+      ...genTopics('ef1-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Leitura e Escrita'),
+      ...genTopics('ef1-mt', 5, 'Matemática', 'Matemática', 'Números e Operações'),
     ],
   },
-  '10-11': {
-    label: '5º e 6º ano — Ensino Fundamental',
+  ef2: {
+    label: '2º ano — Ensino Fundamental',
     topics: [
-      ...genTopics('lp5', 22, 'Linguagens', 'Língua Portuguesa', 'Análise Linguística'),
-      ...genTopics('mt5', 22, 'Matemática', 'Matemática', 'Álgebra e Probabilidade'),
+      ...genTopics('ef2-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Leitura e Escrita'),
+      ...genTopics('ef2-mt', 5, 'Matemática', 'Matemática', 'Números e Operações'),
     ],
   },
-  '12': {
+  ef3: {
+    label: '3º ano — Ensino Fundamental',
+    topics: [
+      ...genTopics('ef3-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Práticas de Linguagem'),
+      ...genTopics('ef3-mt', 5, 'Matemática', 'Matemática', 'Geometria e Grandezas'),
+    ],
+  },
+  ef4: {
+    label: '4º ano — Ensino Fundamental',
+    topics: [
+      ...genTopics('ef4-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Práticas de Linguagem'),
+      ...genTopics('ef4-mt', 5, 'Matemática', 'Matemática', 'Geometria e Grandezas'),
+    ],
+  },
+  ef5: {
+    label: '5º ano — Ensino Fundamental',
+    topics: [
+      ...genTopics('ef5-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Análise Linguística'),
+      ...genTopics('ef5-mt', 5, 'Matemática', 'Matemática', 'Álgebra e Probabilidade'),
+    ],
+  },
+  ef6: {
+    label: '6º ano — Ensino Fundamental',
+    topics: [
+      ...genTopics('ef6-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Análise Linguística'),
+      ...genTopics('ef6-mt', 5, 'Matemática', 'Matemática', 'Álgebra e Probabilidade'),
+    ],
+  },
+  ef7: {
     label: '7º ano — Ensino Fundamental',
     topics: [
-      ...genTopics('lp7', 9, 'Linguagens', 'Língua Portuguesa', 'Sintaxe'),
-      ...genTopics('mt7', 7, 'Matemática', 'Matemática', 'Equações'),
-      ...genTopics('ci7', 3, 'Ciências da Natureza', 'Ciências', 'Energia'),
-      ...genTopics('hi7', 2, 'Ciências Humanas', 'História', 'História do Brasil'),
-      ...genTopics('ge7', 1, 'Ciências Humanas', 'Geografia', 'Espaço Geográfico'),
-      ...genTopics('en7', 2, 'Linguagens', 'Língua Inglesa', 'Vocabulário'),
+      ...genTopics('ef7-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Sintaxe'),
+      ...genTopics('ef7-mt', 5, 'Matemática', 'Matemática', 'Equações'),
     ],
   },
-  '13+': {
-    label: '8º e 9º ano / Ensino Médio',
+  ef8: {
+    label: '8º ano — Ensino Fundamental',
     topics: [
-      ...genTopics('lp8', 9, 'Linguagens', 'Literatura/ENEM', 'Análise Literária'),
-      ...genTopics('mt8', 8, 'Matemática', 'Matemática', 'Funções'),
-      ...genTopics('ph8', 4, 'Ciências da Natureza', 'Física', 'Cinemática'),
-      ...genTopics('ch8', 3, 'Ciências da Natureza', 'Química', 'Estrutura Atômica'),
-      ...genTopics('bi8', 2, 'Ciências da Natureza', 'Biologia', 'Genética'),
-      ...genTopics('hi8', 2, 'Ciências Humanas', 'História', 'História Contemporânea'),
-      ...genTopics('ge8', 1, 'Ciências Humanas', 'Geografia', 'Geopolítica'),
-      ...genTopics('en8', 2, 'Linguagens', 'Língua Inglesa', 'Interpretação Avançada'),
+      ...genTopics('ef8-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Sintaxe e Morfologia'),
+      ...genTopics('ef8-mt', 5, 'Matemática', 'Matemática', 'Equações e Sistemas'),
     ],
   },
+  ef9: {
+    label: '9º ano — Ensino Fundamental',
+    topics: [
+      ...genTopics('ef9-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Análise Literária'),
+      ...genTopics('ef9-mt', 5, 'Matemática', 'Matemática', 'Funções'),
+    ],
+  },
+  em1: {
+    label: '1º ano — Ensino Médio',
+    topics: [
+      ...genTopics('em1-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Literatura'),
+      ...genTopics('em1-mt', 5, 'Matemática', 'Matemática', 'Funções e Conjuntos'),
+    ],
+  },
+  em2: {
+    label: '2º ano — Ensino Médio',
+    topics: [
+      ...genTopics('em2-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Literatura Brasileira'),
+      ...genTopics('em2-mt', 5, 'Matemática', 'Matemática', 'Geometria Espacial'),
+    ],
+  },
+  em3: {
+    label: '3º ano — Ensino Médio',
+    topics: [
+      ...genTopics('em3-lp', 5, 'Linguagens', 'Língua Portuguesa', 'Redação e ENEM'),
+      ...genTopics('em3-mt', 5, 'Matemática', 'Matemática', 'Revisão Geral e ENEM'),
+    ],
+  },
+}
+
+export function getBnccTopicsForYear(schoolYear: string) {
+  return BNCC_BY_YEAR[schoolYear] || BNCC_BY_YEAR['ef1']
+}
+
+// Keep backward compatibility for other files
+export const BNCC_TOPICS_BY_AGE = {
+  '6-7': BNCC_BY_YEAR['ef1'],
+  '8-9': BNCC_BY_YEAR['ef3'],
+  '10-11': BNCC_BY_YEAR['ef5'],
+  '12': BNCC_BY_YEAR['ef7'],
+  '13+': BNCC_BY_YEAR['ef9'],
 }
 
 export function getBnccTopicsForAge(age: number) {
