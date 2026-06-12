@@ -27,7 +27,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useSchoolHelper } from '@/hooks/use-school-helper'
 import { useFamily } from '@/contexts/FamilyContext'
-import { getTopicsForAge, BnccTopic } from '@/data/bnccTopics'
+import { getBnccTopicsForYear, BnccTopic } from '@/data/bncc'
 import {
   getStudyPlan,
   createStudyPlan,
@@ -35,7 +35,6 @@ import {
   getTopicProgress,
   saveStudyEvaluation,
 } from '@/services/study_plans'
-import { calculateAge } from '@/utils/ageUtils'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -53,12 +52,16 @@ export default function Studies() {
     }
   }, [children, selectedChildId])
 
-  const childAge = useMemo(() => {
-    const child = children.find((c) => c.id === selectedChildId)
-    return child ? calculateAge(child.birth_date) : 0
-  }, [children, selectedChildId])
+  const selectedChild = useMemo(
+    () => children.find((c) => c.id === selectedChildId),
+    [children, selectedChildId],
+  )
+  const schoolYear = selectedChild?.school_year || 'ef1'
 
-  const availableTopics = useMemo(() => getTopicsForAge(childAge), [childAge])
+  const availableTopics = useMemo(() => {
+    const data = getBnccTopicsForYear(schoolYear)
+    return data ? data.topics : []
+  }, [schoolYear])
 
   const [activeTab, setActiveTab] = useState('plan')
   const [studyPlan, setStudyPlan] = useState<any>(null)
@@ -78,11 +81,13 @@ export default function Studies() {
         let plan = await getStudyPlan(selectedChildId, currentYear)
 
         if (!plan) {
+          // Prepopulate with all available topics for that grade
+          const defaultTopics = availableTopics.map((t) => t.id)
           plan = await createStudyPlan({
             family_id: family?.id,
             member_id: selectedChildId,
             year: currentYear,
-            bncc_topics: [],
+            bncc_topics: defaultTopics,
             parent_notes: '',
           })
         }
@@ -100,7 +105,7 @@ export default function Studies() {
       }
     }
     loadPlan()
-  }, [selectedChildId, family?.id])
+  }, [selectedChildId, family?.id, availableTopics])
 
   const handleEvaluation = async (evData: any) => {
     if (!studyPlan || !activeTopicId || activeTopicId === 'general') return
@@ -112,7 +117,7 @@ export default function Studies() {
         study_plan_id: studyPlan.id,
         member_id: selectedChildId,
         topic_id: topic.id,
-        topic_label: topic.label,
+        topic_label: topic.subtopic,
         evaluation: evData,
       })
       const progress = await getTopicProgress(selectedChildId, studyPlan.id)
@@ -136,8 +141,10 @@ export default function Studies() {
     if (activeTopicId !== 'general') {
       const topic = availableTopics.find((t) => t.id === activeTopicId)
       if (topic) {
-        contentToSend = `[Contexto - Tópico Foco: ${topic.label}]\n${message}`
+        contentToSend = `[Contexto - Aluno: ${selectedChild?.name}, Série: ${schoolYear}, Tópico Foco: ${topic.topic} / ${topic.subtopic}]\n${message}`
       }
+    } else {
+      contentToSend = `[Contexto - Aluno: ${selectedChild?.name}, Série: ${schoolYear}, Tópico Foco: Geral]\n${message}`
     }
 
     await sendMessage(contentToSend)
@@ -185,29 +192,29 @@ export default function Studies() {
   const summary = useMemo(() => {
     const totalEnabled = enabledTopics.length
     const started = progressData.length
-    const consolidated = progressData.filter((p) => p.mastery_level === 3).length
+    const consolidated = progressData.filter((p) => p.mastery_level >= 3).length
     const advanced = progressData.filter((p) => p.mastery_level === 4).length
     return { totalEnabled, started, consolidated, advanced }
   }, [enabledTopics, progressData])
 
   function displayContent(raw: string) {
     let clean = raw.replace(/\[AVALIACAO\][\s\S]*?\[\/AVALIACAO\]/g, '')
-    clean = clean.replace(/\[Contexto - Tópico Foco:.*?\]\n/g, '')
+    clean = clean.replace(/\[Contexto -[^\]]*\]\n?/g, '')
     return clean.trim()
   }
 
   function getProgressColor(level: number) {
     switch (level) {
       case 1:
-        return 'bg-blue-500'
+        return 'bg-slate-400 dark:bg-slate-500' // Introduced
       case 2:
-        return 'bg-green-500'
+        return 'bg-blue-500' // In Development
       case 3:
-        return 'bg-yellow-500'
+        return 'bg-green-500' // Consolidated
       case 4:
-        return 'bg-yellow-400'
+        return 'bg-yellow-500' // Advanced
       default:
-        return 'bg-gray-300 dark:bg-gray-700'
+        return 'bg-gray-200 dark:bg-gray-800'
     }
   }
 
@@ -239,6 +246,13 @@ export default function Studies() {
       default:
         return 'Não iniciado'
     }
+  }
+
+  const areaColors: Record<string, string> = {
+    Linguagens: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+    Matemática: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    'Ciências da Natureza': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+    'Ciências Humanas': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
   }
 
   return (
@@ -275,6 +289,17 @@ export default function Studies() {
         )}
       </div>
 
+      {!selectedChild?.school_year && children.length > 0 && (
+        <Alert variant="destructive" className="flex-shrink-0">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Atenção</AlertTitle>
+          <AlertDescription>
+            O aluno não possui um ano escolar configurado em seu perfil. O plano letivo padrão (1º
+            ano EF) será utilizado.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
         <TabsList className="w-full sm:w-auto self-start">
           <TabsTrigger value="plan">
@@ -303,7 +328,17 @@ export default function Studies() {
                 <div className="space-y-6 pb-4">
                   {Object.entries(groupedTopics).map(([area, topics]) => (
                     <div key={area}>
-                      <h3 className="font-semibold text-lg mb-3">{area}</h3>
+                      <div className="flex items-center gap-2 mb-3">
+                        <h3 className="font-semibold text-lg">{area}</h3>
+                        <span
+                          className={cn(
+                            'text-xs font-medium px-2 py-0.5 rounded-full',
+                            areaColors[area] || 'bg-secondary text-secondary-foreground',
+                          )}
+                        >
+                          BNCC
+                        </span>
+                      </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {topics.map((t) => (
                           <div
@@ -318,10 +353,13 @@ export default function Studies() {
                             <div className="space-y-1 leading-none">
                               <Label
                                 htmlFor={`topic-${t.id}`}
-                                className="text-sm cursor-pointer leading-tight"
+                                className="text-sm cursor-pointer leading-tight font-medium"
                               >
-                                {t.label}
+                                {t.topic}
                               </Label>
+                              <p className="text-xs text-muted-foreground mt-1 leading-snug">
+                                {t.subtopic}
+                              </p>
                             </div>
                           </div>
                         ))}
@@ -329,12 +367,18 @@ export default function Studies() {
                     </div>
                   ))}
 
-                  <div className="pt-4">
-                    <h3 className="font-semibold text-lg mb-3">Observações do Responsável</h3>
+                  <div className="pt-4 border-t border-border mt-4">
+                    <h3 className="font-semibold text-lg mb-1">
+                      Ênfases e observações (Parent Notes)
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Adicione informações que o tutor deve saber sobre o estilo de aprendizado ou
+                      dificuldades do aluno.
+                    </p>
                     <Textarea
                       value={parentNotes}
                       onChange={(e) => setParentNotes(e.target.value)}
-                      placeholder="Adicione observações, áreas de foco, dificuldades..."
+                      placeholder="Ex: Tem dificuldade com matemática básica. Gosta muito de dinossauros..."
                       className="min-h-[100px] resize-none"
                     />
                   </div>
@@ -366,7 +410,7 @@ export default function Studies() {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Label className="whitespace-nowrap font-medium">Tópico Ativo:</Label>
                 <Select value={activeTopicId} onValueChange={setActiveTopicId}>
-                  <SelectTrigger className="w-full sm:w-[300px]">
+                  <SelectTrigger className="w-full sm:w-[350px]">
                     <SelectValue placeholder="Selecione um tópico..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -375,7 +419,7 @@ export default function Studies() {
                       const t = availableTopics.find((x) => x.id === id)
                       return t ? (
                         <SelectItem key={id} value={id}>
-                          {t.label}
+                          {t.topic} - {t.subtopic.substring(0, 30)}...
                         </SelectItem>
                       ) : null
                     })}
@@ -473,83 +517,112 @@ export default function Studies() {
           </TabsContent>
 
           <TabsContent value="progress" className="h-full m-0">
-            <ScrollArea className="h-full pr-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <Card>
-                  <CardContent className="pt-6 text-center">
-                    <div className="text-3xl font-bold text-blue-600">{summary.totalEnabled}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Tópicos Ativos</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6 text-center">
-                    <div className="text-3xl font-bold text-emerald-600">{summary.started}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Iniciados</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6 text-center">
-                    <div className="text-3xl font-bold text-yellow-600">{summary.consolidated}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Consolidados</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6 text-center">
-                    <div className="text-3xl font-bold text-amber-500">{summary.advanced}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Avançados</p>
-                  </CardContent>
-                </Card>
+            {isPlanLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-[200px] w-full" />
+                <Skeleton className="h-[200px] w-full" />
               </div>
-
-              {enabledTopics.length === 0 ? (
-                <div className="text-center py-10 text-muted-foreground">
-                  Nenhum tópico ativo no plano letivo.
+            ) : (
+              <ScrollArea className="h-full pr-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <div className="text-3xl font-bold text-blue-600">{summary.totalEnabled}</div>
+                      <p className="text-xs text-muted-foreground mt-1">Tópicos Ativos</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <div className="text-3xl font-bold text-emerald-600">{summary.started}</div>
+                      <p className="text-xs text-muted-foreground mt-1">Iniciados</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <div className="text-3xl font-bold text-green-600">
+                        {summary.consolidated}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Consolidados</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center">
+                      <div className="text-3xl font-bold text-amber-500">{summary.advanced}</div>
+                      <p className="text-xs text-muted-foreground mt-1">Avançados</p>
+                    </CardContent>
+                  </Card>
                 </div>
-              ) : (
-                <div className="space-y-4 pb-4">
-                  {enabledTopics.map((id) => {
-                    const topic = availableTopics.find((t) => t.id === id)
-                    if (!topic) return null
-                    const prog = progressData.find((p) => p.topic_id === id)
-                    const level = prog?.mastery_level || 0
-                    const color = getProgressColor(level)
-                    const value = getProgressValue(level)
-                    const sessions = prog?.sessions_count || 0
 
-                    return (
-                      <Card key={id}>
-                        <CardContent className="p-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
-                            <div className="font-medium text-sm leading-tight max-w-[80%]">
-                              {topic.label}
+                {enabledTopics.length === 0 ? (
+                  <div className="text-center py-10 text-muted-foreground">
+                    Nenhum tópico ativo no plano letivo.
+                  </div>
+                ) : (
+                  <div className="space-y-4 pb-4">
+                    {enabledTopics.map((id) => {
+                      const topic = availableTopics.find((t) => t.id === id)
+                      if (!topic) return null
+                      const prog = progressData.find((p) => p.topic_id === id)
+                      const level = prog?.mastery_level || 0
+                      const color = getProgressColor(level)
+                      const value = getProgressValue(level)
+                      const sessions = prog?.sessions_count || 0
+
+                      return (
+                        <Card key={id}>
+                          <CardContent className="p-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                              <div className="font-medium text-sm leading-tight max-w-[80%]">
+                                <span
+                                  className={cn(
+                                    'text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-sm mr-2',
+                                    areaColors[topic.area] ||
+                                      'bg-secondary text-secondary-foreground',
+                                  )}
+                                >
+                                  {topic.area}
+                                </span>
+                                {topic.topic} -{' '}
+                                <span className="text-muted-foreground font-normal">
+                                  {topic.subtopic}
+                                </span>
+                              </div>
+                              <div
+                                className={cn(
+                                  'text-xs font-semibold whitespace-nowrap px-2 py-1 rounded-md text-white',
+                                  color,
+                                )}
+                              >
+                                {getLevelLabel(level)}
+                              </div>
                             </div>
-                            <div className="text-xs font-semibold whitespace-nowrap px-2 py-1 bg-secondary rounded-md">
-                              {getLevelLabel(level)}
+                            <div className="h-2.5 w-full bg-secondary rounded-full overflow-hidden mb-3">
+                              <div
+                                className={cn(
+                                  'h-full transition-all duration-1000 ease-out',
+                                  color,
+                                )}
+                                style={{ width: `${value}%` }}
+                              />
                             </div>
-                          </div>
-                          <div className="h-2.5 w-full bg-secondary rounded-full overflow-hidden mb-3">
-                            <div
-                              className={cn('h-full transition-all duration-1000 ease-out', color)}
-                              style={{ width: `${value}%` }}
-                            />
-                          </div>
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>Sessões concluídas: {sessions}</span>
-                            {prog?.last_session_at ? (
-                              <span>
-                                Última: {new Date(prog.last_session_at).toLocaleDateString()}
-                              </span>
-                            ) : (
-                              <span>Nenhuma sessão</span>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
-              )}
-            </ScrollArea>
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>Sessões concluídas: {sessions}</span>
+                              {prog?.last_session_at ? (
+                                <span>
+                                  Última: {new Date(prog.last_session_at).toLocaleDateString()}
+                                </span>
+                              ) : (
+                                <span>Nenhuma sessão</span>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                )}
+              </ScrollArea>
+            )}
           </TabsContent>
         </div>
       </Tabs>
