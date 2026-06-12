@@ -179,6 +179,7 @@ export function FamilyTab() {
     member_type: 'child',
     role: '',
     education_type: 'traditional',
+    school_year: '',
     dietary_restrictions: '',
     pin_code: '',
     photo_url: '',
@@ -191,6 +192,7 @@ export function FamilyTab() {
       member_type: 'child',
       role: '',
       education_type: 'traditional',
+      school_year: '',
       dietary_restrictions: '',
       pin_code: '',
       photo_url: '',
@@ -205,6 +207,7 @@ export function FamilyTab() {
       member_type: m.member_type || 'child',
       role: m.role || '',
       education_type: m.education_type || 'traditional',
+      school_year: m.school_year || '',
       dietary_restrictions: m.dietary_restrictions || '',
       pin_code: m.pin_code || '',
       photo_url: m.photo_url || '',
@@ -231,6 +234,8 @@ export function FamilyTab() {
       const dataToSave = {
         ...formData,
         education_type: formData.member_type === 'child' ? formData.education_type : null,
+        school_year:
+          formData.member_type === 'child' && formData.school_year ? formData.school_year : null,
         birth_date: new Date(`${formData.birth_date}T12:00:00Z`).toISOString(),
       }
 
@@ -267,6 +272,13 @@ export function FamilyTab() {
       .join('')
       .substring(0, 2)
       .toUpperCase()
+
+    const schoolYearLabel = (val: string) => {
+      if (val === 'pre') return 'Pré-escola'
+      if (val?.startsWith('ef')) return `${val.replace('ef', '')}º EF`
+      if (val?.startsWith('em')) return `${val.replace('em', '')}º EM`
+      return val
+    }
 
     return (
       <Card key={m.id} className="relative overflow-hidden">
@@ -319,6 +331,9 @@ export function FamilyTab() {
                   <Badge variant="outline">
                     {m.education_type === 'homeschooling' ? 'Homeschooling' : 'Tradicional'}
                   </Badge>
+                )}
+                {m.member_type === 'child' && m.school_year && (
+                  <Badge variant="outline">{schoolYearLabel(m.school_year)}</Badge>
                 )}
                 {m.dietary_restrictions && (
                   <Badge
@@ -424,21 +439,49 @@ export function FamilyTab() {
               </div>
 
               {formData.member_type === 'child' && (
-                <div className="space-y-2 border-t pt-4">
-                  <Label>Tipo de Educação</Label>
-                  <Select
-                    value={formData.education_type}
-                    onValueChange={(v) => setFormData({ ...formData, education_type: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="traditional">Escola Tradicional</SelectItem>
-                      <SelectItem value="homeschooling">Homeschooling</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <>
+                  <div className="space-y-2 border-t pt-4">
+                    <Label>Tipo de Educação</Label>
+                    <Select
+                      value={formData.education_type}
+                      onValueChange={(v) => setFormData({ ...formData, education_type: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="traditional">Escola Tradicional</SelectItem>
+                        <SelectItem value="homeschooling">Homeschooling</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2 pt-2">
+                    <Label>Ano Escolar Atual</Label>
+                    <Select
+                      value={formData.school_year || undefined}
+                      onValueChange={(v) => setFormData({ ...formData, school_year: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o ano escolar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pre">Pré-escola (4-5 anos)</SelectItem>
+                        <SelectItem value="ef1">1º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef2">2º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef3">3º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef4">4º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef5">5º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef6">6º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef7">7º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef8">8º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="ef9">9º ano — Ensino Fundamental</SelectItem>
+                        <SelectItem value="em1">1º ano — Ensino Médio</SelectItem>
+                        <SelectItem value="em2">2º ano — Ensino Médio</SelectItem>
+                        <SelectItem value="em3">3º ano — Ensino Médio</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               )}
 
               <div className="space-y-2 border-t pt-4">

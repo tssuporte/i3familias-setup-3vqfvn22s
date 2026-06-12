@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-11T18:41:33.766Z",
+  "generatedAt": "2026-06-12T12:26:56.157Z",
   "collections": [
     {
       "name": "users",
@@ -184,6 +184,27 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "school_year",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "pre",
+            "ef1",
+            "ef2",
+            "ef3",
+            "ef4",
+            "ef5",
+            "ef6",
+            "ef7",
+            "ef8",
+            "ef9",
+            "em1",
+            "em2",
+            "em3"
+          ]
         }
       ],
       "indexes": ["CREATE INDEX idx_family_members_family_id ON family_members (family_id)"]

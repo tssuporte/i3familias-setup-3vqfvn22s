@@ -6,6 +6,7 @@ export interface FamilyMember {
   name: string
   member_type: 'adult' | 'child'
   photo_url?: string
+  school_year?: string
 }
 
 export const getFamilyMembers = (familyId: string) => {
